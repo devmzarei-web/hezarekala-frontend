@@ -1,3 +1,6 @@
+import type { Product } from "@/payload-types";
+
+/* ── Company Information ── */
 export const COMPANY = {
   nameFa: "هزاره کالا دانش اروند",
   nameEn: "Hezareh Kala Danesh Arvand",
@@ -8,8 +11,152 @@ export const COMPANY = {
   registrationNumber: "۷۴۱۵",
   economicCode: "۴۱۱۶۳۷۷۵۶۸۵۴",
   nationalId: "۱۴۰۰۸۲۶۱۰۵۰",
-  address: "استان خوزستان، شهرستان آبادان، شهرک صنعتی آبادان، خیابان اروند۱، کوچه فرعی ۶، پلاک ۰",
+  address: "استان خوزستان، شهرستان آبادان، شهرک صنعتی آبادان، خیابان یک، شماره ۶ (فرعی ۶)",
   postalCode: "۶۳۱۵۷۷۴۹۸۷",
-  phone: "+۹۸ ۹۱۶ ۶۳۱ ۰۶۳۱",
-  email: "info@hezarehkala.ir",
+  phone: "۰۹۱۷۷۴۲۱۱۷۶ — ۰۹۱۶۶۳۱۷۶۰۹",
+  email: "danesh.hezareh.kala@gmail.com",
 } as const;
+
+/* ── Default Industrial Products Catalog ── */
+export const DEFAULT_PRODUCTS: Product[] = [
+  {
+    id: "prod-hkda-dgp-4d-001",
+    title: "پکیج دیزل پمپ پرتابل ۴ اینچ مدل HKDA.DGP.4D.001",
+    slug: "portable-diesel-gear-pump-hkda-4d001",
+    category: "gear",
+    shortDescription:
+      "پکیج پرتابل و مستقل از برق پمپ دنده‌ای صنعتی جابه‌جایی مثبت ۴ اینچ با کاور سایلنت، موتور دیزل و دبی ۴۲ مترمکعب در ساعت؛ طراحی‌شده برای انتقال فرآورده‌های نفتی، روغن‌های سنگین، سوخت، لجن هیدروکربنی و سیالات غلیظ در شرایط اضطراری.",
+    metaTitle: "دیزل پمپ پرتابل ۴ اینچ مدل HKDA.DGP.4D.001 | هزاره کالا",
+    metaDescription:
+      "مشخصات فنی و استعلام قیمت پکیج دیزل پمپ دنده‌ای جابه‌جایی مثبت ۴ اینچ پرتابل مدل HKDA.DGP.4D.001 ساخت شرکت هزاره کالا دانش اروند.",
+    isFeatured: true,
+    isActive: true,
+    order: 1,
+    specifications: [
+      { standardFeature: "flowRate", value: "42", unit: "m³/h", isNumeric: true },
+      { standardFeature: "head", value: "50", unit: "m", isNumeric: true },
+      { standardFeature: "power", value: "15", unit: "kW", isNumeric: true },
+      { standardFeature: "speed", value: "700", unit: "RPM", isNumeric: true },
+      { standardFeature: "maxTemp", value: "300", unit: "°C", isNumeric: true },
+      { standardFeature: "weight", value: "90", unit: "kg", isNumeric: true },
+      {
+        standardFeature: "casingMaterial",
+        value: "چدن صنعتی (نسخه سفارشی: استنلس استیل 316L)",
+        isNumeric: false,
+      },
+      { standardFeature: "shaftMaterial", value: "فولاد آلیاژی سخت‌کاری شده", isNumeric: false },
+      { standardFeature: "sealType", value: "نخ پکینگ نسوز تفلونی", isNumeric: false },
+      { standardFeature: "custom", customLabel: "سایز ورودی و خروجی", value: "4", unit: "inch", isNumeric: true },
+      { standardFeature: "custom", customLabel: "محرک دستگاه", value: "موتور دیزل صنعتی مجهز به استارت الکتریکی و باتری", isNumeric: false },
+      { standardFeature: "custom", customLabel: "نوع شاسی و کاور", value: "شاسی فولادی یکپارچه پرتابل با کاور سایلنت و لایه جاذب صوت", isNumeric: false },
+    ],
+  },
+  {
+    id: "prod-sp-4d-01",
+    title: "پمپ خودمکش دیزلی تمام‌اتوماتیک ۴ اینچ مدل SP-4D-01",
+    slug: "self-priming-diesel-pump-4inch",
+    category: "centrifugal",
+    shortDescription:
+      "پمپ خودمکش دیزلی پرتابل ۴ اینچ با دبی ۱۶۰ مترمکعب بر ساعت، عمق مکش ۹ متر، سامانه وکیوم کمکی و کنترلر سه‌مرحله‌ای؛ مناسب آبکشی، تخلیه آبگرفتگی‌ها و انتقال فاضلاب و سیالات حاوی لجن، شن و ماسه.",
+    metaTitle: "پمپ خودمکش دیزلی ۴ اینچ SP-4D-01 | هزاره کالا",
+    metaDescription:
+      "پمپ خودمکش تمام‌اتوماتیک دیزلی ۴ اینچ با دبی ۱۶۰ مترمکعب بر ساعت و عبور جامدات تا ۴۵ میلی‌متر ساخت هزاره کالا.",
+    isFeatured: true,
+    isActive: true,
+    order: 2,
+    specifications: [
+      { standardFeature: "flowRate", value: "160", unit: "m³/h", isNumeric: true },
+      { standardFeature: "head", value: "32", unit: "m", isNumeric: true },
+      { standardFeature: "power", value: "25", unit: "kW", isNumeric: true },
+      { standardFeature: "speed", value: "1500", unit: "RPM", isNumeric: true },
+      { standardFeature: "custom", customLabel: "سایز ورودی و خروجی", value: "4", unit: "inch", isNumeric: true },
+      { standardFeature: "custom", customLabel: "حداکثر عمق مکش", value: "9", unit: "m", isNumeric: true },
+      { standardFeature: "custom", customLabel: "قابلیت عبور جامدات", value: "45", unit: "mm", isNumeric: true },
+      { standardFeature: "casingMaterial", value: "چدن صنعتی ضدسایش", isNumeric: false },
+      { standardFeature: "impellerMaterial", value: "پروانه چشم‌باز ضدسایش", isNumeric: false },
+      { standardFeature: "sealType", value: "سیل مکانیکال صنعتی مقاوم در برابر ذرات", isNumeric: false },
+      { standardFeature: "custom", customLabel: "سامانه خودمکش", value: "وکیوم کمکی + کنترلر سه‌مرحله‌ای ضدورود لجن", isNumeric: false },
+      { standardFeature: "custom", customLabel: "نوع شاسی", value: "شاسی چرخ‌دار یدک‌کش با جک‌های تراز", isNumeric: false },
+    ],
+  },
+  {
+    id: "prod-sp-6d-01",
+    title: "پمپ خودمکش دیزلی تمام‌اتوماتیک ۶ اینچ مدل SP-6D-01",
+    slug: "self-priming-diesel-pump-6inch",
+    category: "centrifugal",
+    shortDescription:
+      "پکیج خودمکش دیزلی ۶ اینچ با دبی ۳۲۰ مترمکعب بر ساعت، هد ۳۲ متر، سامانه وکیوم مایع‌رینگ ۱۰۰ CFM، موتور دیزل چهارسیلندر ۳۸ کیلووات و شاسی یدک‌کش؛ ایده‌آل برای آبگیری گودها، کانال‌ها و انتقال لجن در پروژه‌های عمرانی و پالایشگاهی.",
+    metaTitle: "پمپ خودمکش دیزلی ۶ اینچ SP-6D-01 | هزاره کالا",
+    metaDescription:
+      "پمپ خودمکش دیزلی تمام‌اتوماتیک ۶ اینچ مدل SP-6D-01 با دبی ۳۲۰ مترمکعب بر ساعت و عبور جامدات تا ۱۰۰ میلی‌متر ساخت هزاره کالا.",
+    isFeatured: true,
+    isActive: true,
+    order: 3,
+    specifications: [
+      { standardFeature: "flowRate", value: "320", unit: "m³/h", isNumeric: true },
+      { standardFeature: "head", value: "32", unit: "m", isNumeric: true },
+      { standardFeature: "power", value: "38", unit: "kW", isNumeric: true },
+      { standardFeature: "speed", value: "1500", unit: "RPM", isNumeric: true },
+      { standardFeature: "custom", customLabel: "سایز ورودی و خروجی", value: "6", unit: "inch", isNumeric: true },
+      { standardFeature: "custom", customLabel: "حداکثر عمق مکش", value: "9", unit: "m", isNumeric: true },
+      { standardFeature: "custom", customLabel: "ظرفیت وکیوم مکش هوا", value: "100", unit: "CFM", isNumeric: true },
+      { standardFeature: "custom", customLabel: "قابلیت عبور جامدات", value: "100", unit: "mm", isNumeric: true },
+      { standardFeature: "casingMaterial", value: "حلزونی چدن داکتیل ضدسایش", isNumeric: false },
+      { standardFeature: "impellerMaterial", value: "پروانه چشم‌باز مقاوم در برابر سایش", isNumeric: false },
+      { standardFeature: "shaftMaterial", value: "استنلس استیل", isNumeric: false },
+      { standardFeature: "sealType", value: "سیل مکانیکال تخصصی ذرات معلق", isNumeric: false },
+      { standardFeature: "custom", customLabel: "موتور محرک", value: "دیزل ۴ سیلندر آب‌خنک ۳۸ کیلووات در ۱۵۰۰ RPM", isNumeric: false },
+      { standardFeature: "custom", customLabel: "حجم مخزن سوخت", value: "80", unit: "L", isNumeric: true },
+    ],
+  },
+  {
+    id: "prod-sp-8d-01",
+    title: "پمپ خودمکش دیزلی تمام‌اتوماتیک ۸ اینچ مدل SP-8D-01",
+    slug: "self-priming-diesel-pump-8inch",
+    category: "centrifugal",
+    shortDescription:
+      "قدرتمندترین پمپ خودمکش دیزلی مجموعه با دبی ۶۰۰ مترمکعب در ساعت، موتور دیزل ۷۰ کیلووات ساخت موتورسازان تبریز، عبور جامدات تا ۱۰۰ میلی‌متر و شاسی فولادی تک‌محور با ترمز دستی؛ طراحی‌شده برای تخلیه حوضچه‌های آلوده و مهار سیلاب‌های بزرگ.",
+    metaTitle: "پمپ خودمکش دیزلی ۸ اینچ SP-8D-01 | هزاره کالا",
+    metaDescription:
+      "پمپ خودمکش دیزلی سنگین ۸ اینچ مدل SP-8D-01 با دبی ۶۰۰ مترمکعب بر ساعت و موتور ۷۰ کیلووات ساخت هزاره کالا دانش اروند.",
+    isFeatured: true,
+    isActive: true,
+    order: 4,
+    specifications: [
+      { standardFeature: "flowRate", value: "600", unit: "m³/h", isNumeric: true },
+      { standardFeature: "head", value: "32", unit: "m", isNumeric: true },
+      { standardFeature: "power", value: "70", unit: "kW", isNumeric: true },
+      { standardFeature: "speed", value: "1500", unit: "RPM", isNumeric: true },
+      { standardFeature: "custom", customLabel: "سایز ورودی و خروجی", value: "8", unit: "inch", isNumeric: true },
+      { standardFeature: "custom", customLabel: "حداکثر عمق مکش", value: "9", unit: "m", isNumeric: true },
+      { standardFeature: "custom", customLabel: "ظرفیت وکیوم مکش هوا", value: "100", unit: "CFM", isNumeric: true },
+      { standardFeature: "custom", customLabel: "قابلیت عبور جامدات", value: "100", unit: "mm", isNumeric: true },
+      { standardFeature: "casingMaterial", value: "حلزونی چدن آلیاژی ضدسایش", isNumeric: false },
+      { standardFeature: "impellerMaterial", value: "پروانه چشم‌باز ضدسایش با گذردهی بالا", isNumeric: false },
+      { standardFeature: "shaftMaterial", value: "استنلس استیل مقاوم در برابر خوردگی", isNumeric: false },
+      { standardFeature: "sealType", value: "سیل مکانیکال سخت‌کاری شده کاربید تنگستن", isNumeric: false },
+      { standardFeature: "custom", customLabel: "موتور محرک", value: "دیزل آب‌خنک موتورسازان تبریز مدل 40/40، توان ۷۰ kW", isNumeric: false },
+      { standardFeature: "custom", customLabel: "حجم مخزن سوخت", value: "80", unit: "L", isNumeric: true },
+    ],
+  },
+  {
+    id: "prod-wet-blast-01",
+    title: "دستگاه وت‌بلاست و آماده‌سازی سطح پرتابل",
+    slug: "portable-wet-blast-unit",
+    category: "other",
+    shortDescription:
+      "سامانه سندبلاست مرطوب (وت‌بلاست) پرتابل جهت رسوب‌زدایی، زنگ‌زدایی و آماده‌سازی سطح بدون ایجاد گرد و غبار برای صنایع نفت، گاز، پتروشیمی و سازه‌های دریایی.",
+    metaTitle: "دستگاه وت‌بلاست پرتابل | هزاره کالا",
+    metaDescription:
+      "دستگاه وت‌بلاست بدون غبار ساخت شرکت هزاره کالا دانش اروند مناسب عملیات سندبلاست مرطوب و رسوب‌زدایی تجهیزات صنعتی.",
+    isFeatured: true,
+    isActive: true,
+    order: 5,
+    specifications: [
+      { standardFeature: "maxPressure", value: "12", unit: "bar", isNumeric: true },
+      { standardFeature: "casingMaterial", value: "مخزن فولادی تحت فشار با پوشش محافظ اپوکسی", isNumeric: false },
+      { standardFeature: "custom", customLabel: "سیستم پاشش", value: "ترکیب آب و ذرات ساینده بدون ایجاد گرد و غبار", isNumeric: false },
+      { standardFeature: "custom", customLabel: "نوع شاسی", value: "شاسی چرخ‌دار کارگاهی قابل‌حمل", isNumeric: false },
+    ],
+  },
+];

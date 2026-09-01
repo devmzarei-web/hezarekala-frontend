@@ -12,6 +12,8 @@ import Link from "next/link";
 import { ArrowRight, Phone, ArrowLeftRight } from "lucide-react";
 import { getSpecLabel, SpecValueDisplay } from "@/lib/specs";
 
+import { DEFAULT_PRODUCTS } from "@/lib/constants";
+
 async function getProduct(slug: string) {
   try {
     const res = await fetch(`${PAYLOAD_API_URL}/products?where[slug][equals]=${encodeURIComponent(slug)}&limit=1`, {
@@ -19,11 +21,11 @@ async function getProduct(slug: string) {
       headers: { "Content-Type": "application/json" },
       next: { revalidate: 60 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) return DEFAULT_PRODUCTS.find((p) => p.slug === slug) || null;
     const data = await res.json();
-    return data?.docs?.[0] || null;
+    return data?.docs?.[0] || DEFAULT_PRODUCTS.find((p) => p.slug === slug) || null;
   } catch {
-    return null;
+    return DEFAULT_PRODUCTS.find((p) => p.slug === slug) || null;
   }
 }
 

@@ -1,5 +1,6 @@
 import type { Settings, Product, Page, HomeSection } from "@/payload-types";
 import { PAYLOAD_API_URL } from "@/lib/env";
+import { DEFAULT_PRODUCTS } from "@/lib/constants";
 
 /* ── Types ── */
 export interface ProjectItem {
@@ -154,7 +155,9 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     "/products?where[isFeatured][equals]=true&where[isActive][equals]=true&sort=-order&limit=6"
   );
 
-  return data?.docs ?? [];
+  return data?.docs && data.docs.length > 0
+    ? data.docs
+    : DEFAULT_PRODUCTS.filter((p) => p.isFeatured);
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -162,7 +165,7 @@ export async function getProducts(): Promise<Product[]> {
     "/products?where[isActive][equals]=true&sort=-order&limit=50"
   );
 
-  return data?.docs ?? [];
+  return data?.docs && data.docs.length > 0 ? data.docs : DEFAULT_PRODUCTS;
 }
 
 /* ── Pages ── */

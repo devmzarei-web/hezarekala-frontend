@@ -143,8 +143,11 @@ export default async function ProductsPage() {
                         )}
                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                           <span className="text-[#c49a2c] font-bold text-xs flex items-center gap-1">
-                            مشاهده جزئیات
+                            مشاهده مشخصات فنی
                             <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
+                          </span>
+                          <span className="text-gray-400 font-medium text-[11px]">
+                            قابلیت مقایسه
                           </span>
                         </div>
                       </div>
