@@ -1,0 +1,15 @@
+export const COMPANY = {
+  nameFa: "هزاره کالا دانش اروند",
+  nameEn: "Hezareh Kala Danesh Arvand",
+  shortName: "هزاره کالا",
+  slogan: "طراحی، ساخت و مونتاژ پمپ‌های صنعتی بزرگ",
+  ceo: "سیدمحمود دانش پور",
+  founded: "۱۳۹۸/۰۱/۲۱",
+  registrationNumber: "۷۴۱۵",
+  economicCode: "۴۱۱۶۳۷۷۵۶۸۵۴",
+  nationalId: "۱۴۰۰۸۲۶۱۰۵۰",
+  address: "استان خوزستان، شهرستان آبادان، شهرک صنعتی آبادان، خیابان اروند۱، کوچه فرعی ۶، پلاک ۰",
+  postalCode: "۶۳۱۵۷۷۴۹۸۷",
+  phone: "+۹۸ ۹۱۶ ۶۳۱ ۰۶۳۱",
+  email: "info@hezarehkala.ir",
+} as const;

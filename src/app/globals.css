@@ -1,0 +1,279 @@
+@import "tailwindcss";
+
+/* ================================================================
+   فونت‌های لوکال - Local Fonts
+   ================================================================ */
+
+/* --- YekanBakh (عناوین Hero - Display) --- */
+@font-face {
+  font-family: "YekanBakh";
+  src: url("/fonts/YekanBakh/YekanBakh-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "YekanBakh";
+  src: url("/fonts/YekanBakh/YekanBakh-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "YekanBakh";
+  src: url("/fonts/YekanBakh/YekanBakh-ExtraBlack.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- IRANSansX (همه متن‌ها - Primary) --- */
+@font-face {
+  font-family: "IRANSansX";
+  src: url("/fonts/IRANSansX/IRANSansX-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANSansX";
+  src: url("/fonts/IRANSansX/IRANSansX-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANSansX";
+  src: url("/fonts/IRANSansX/IRANSansX-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANSansX";
+  src: url("/fonts/IRANSansX/IRANSansX-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Vazirmatn (فونت کمکی - Secondary) --- */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn/Vazirmatn-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn/Vazirmatn-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn/Vazirmatn-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- B Titr (Intro / Hero) --- */
+@font-face {
+  font-family: "B Titr";
+  src: url("/fonts/BTitr/BTitrBold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ================================================================
+   متغیرهای طراحی - Design Tokens
+   ================================================================ */
+
+@theme {
+  --font-display: "YekanBakh", "IRANSansX", system-ui, sans-serif;
+  --font-heading: "IRANSansX", "Vazirmatn", system-ui, sans-serif;
+  --font-body: "IRANSansX", "Vazirmatn", system-ui, sans-serif;
+  --font-nav: "IRANSansX", system-ui, sans-serif;
+
+  --color-primary: #c49a2c;
+  --color-primary-light: #d4a82c;
+  --color-primary-dark: #a07e1e;
+  --color-dark: #0a1628;
+  --color-dark-light: #0d1f33;
+  --color-dark-deep: #060f1c;
+}
+
+/* ================================================================
+   استایل‌های پایه - Base Styles
+   ================================================================ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.85;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    direction: rtl;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hero Title - B Titr (Ultra Bold) */
+  h1,
+  .hero-title {
+    font-family: "B Titr", "YekanBakh", "IRANSansX", system-ui, sans-serif;
+    font-weight: 900;
+    font-synthesis: none;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-shadow:
+      0 3px 6px rgba(0, 0, 0, 0.5),
+      0 6px 12px rgba(0, 0, 0, 0.3),
+      0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Section Titles - IRANSansX ExtraBold */
+  h2,
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    text-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Card Titles - IRANSansX Bold */
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Navigation - IRANSansX Medium */
+  header,
+  nav,
+  header *,
+  nav * {
+    font-family: var(--font-nav);
+    font-weight: 500;
+  }
+
+  /* Body text */
+  p,
+  span,
+  li,
+  a,
+  address {
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+
+  /* Strong/Bold text */
+  strong,
+  b,
+  .font-bold {
+    font-weight: 700 !important;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a1628;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c49a2c;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #d4a82c;
+  }
+
+  ::selection {
+    background: #c49a2c;
+    color: #0a1628;
+  }
+}
+
+/* ================================================================
+   Utility Classes
+   ================================================================ */
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #c49a2c 0%, #e5c158 50%, #c49a2c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Deep shadow for white backgrounds */
+  .text-shadow-light {
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Deep shadow for dark backgrounds */
+  .text-shadow-dark {
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.5),
+      0 4px 8px rgba(0, 0, 0, 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Gold glow */
+  .text-shadow-gold {
+    text-shadow:
+      0 2px 8px rgba(196, 154, 44, 0.4),
+      0 4px 16px rgba(196, 154, 44, 0.2);
+  }
+
+  /* Light gold text - for dark sections */
+  .text-gold-light {
+    color: #e5c158;
+    text-shadow: 0 1px 4px rgba(196, 154, 44, 0.3);
+  }
+}
