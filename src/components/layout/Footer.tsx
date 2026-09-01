@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Phone, Mail, MapPin, ChevronLeft } from "lucide-react";
 import type { Settings } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
+import { COMPANY } from "@/lib/constants";
 
 const QUICK_LINKS = [
   { href: "/products", label: "محصولات" },
@@ -28,9 +29,9 @@ interface FooterProps {
 export default function Footer({ settings }: FooterProps) {
   const logoUrl = getMediaUrl(settings?.logo);
   const watermarkLogoUrl = getMediaUrl(settings?.logoDark || settings?.logo);
-  const phone = settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱";
-  const email = settings?.email || "info@hezarehkala.com";
-  const address = settings?.address || "استان خوزستان، شهرک صنعتی آبادان، خیابان اروند ۱";
+  const phone = settings?.phone || COMPANY.phone;
+  const email = settings?.email || COMPANY.email;
+  const address = settings?.address || COMPANY.address;
 
   return (
     <footer className="relative bg-[#060f1c] text-white overflow-hidden" dir="rtl">

@@ -9,6 +9,8 @@ import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 
+import { COMPANY } from "@/lib/constants";
+
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,9 +36,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   const [settings, page] = await Promise.all([getSettings(), getPage("contact")]);
 
-  const phone = settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱";
-  const email = settings?.email || "info@hezarehkala.com";
-  const address = settings?.address || "استان خوزستان، شهرک صنعتی آبادان، خیابان اروند ۱";
+  const phone = settings?.phone || COMPANY.phone;
+  const email = settings?.email || COMPANY.email;
+  const address = settings?.address || COMPANY.address;
 
   const localBusinessSchema = {
     "@context": "https://schema.org",
