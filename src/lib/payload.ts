@@ -1,4 +1,4 @@
-import type { Settings, Product, Page, HomeSection } from "@/payload-types";
+import type { Settings, Product, ProductCategory, Page, HomeSection } from "@/payload-types";
 import { PAYLOAD_API_URL } from "@/lib/env";
 import { DEFAULT_PRODUCTS } from "@/lib/constants";
 
@@ -149,10 +149,19 @@ export async function getSettings(): Promise<Settings | null> {
   return data?.docs?.[0] ?? null;
 }
 
+/* ── Product Categories ── */
+export async function getProductCategories(): Promise<ProductCategory[]> {
+  const data = await fetchAPI<{ docs: ProductCategory[] }>(
+    "/product-categories?where[isActive][equals]=true&sort=order&limit=50"
+  );
+
+  return data?.docs ?? [];
+}
+
 /* ── Products ── */
 export async function getFeaturedProducts(): Promise<Product[]> {
   const data = await fetchAPI<{ docs: Product[] }>(
-    "/products?where[isFeatured][equals]=true&where[isActive][equals]=true&sort=-order&limit=6"
+    "/products?where[isFeatured][equals]=true&where[isActive][equals]=true&sort=-order&limit=6&depth=2"
   );
 
   return data?.docs && data.docs.length > 0
@@ -160,12 +169,24 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     : DEFAULT_PRODUCTS.filter((p) => p.isFeatured);
 }
 
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts(categorySlug?: string): Promise<Product[]> {
   const data = await fetchAPI<{ docs: Product[] }>(
-    "/products?where[isActive][equals]=true&sort=-order&limit=50"
+    "/products?where[isActive][equals]=true&sort=-order&limit=50&depth=2"
   );
 
-  return data?.docs && data.docs.length > 0 ? data.docs : DEFAULT_PRODUCTS;
+  const products = data?.docs && data.docs.length > 0 ? data.docs : DEFAULT_PRODUCTS;
+
+  if (!categorySlug || categorySlug === "all") {
+    return products;
+  }
+
+  return products.filter((product) => {
+    if (!product.category) return false;
+    if (typeof product.category === "string") {
+      return product.category === categorySlug;
+    }
+    return product.category.slug === categorySlug;
+  });
 }
 
 /* ── Pages ── */

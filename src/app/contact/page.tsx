@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getSettings, getPage } from "@/lib/payload";
 import { SITE_URL } from "@/lib/env";
@@ -150,7 +151,9 @@ export default async function ContactPage() {
         </section>
 
         <div className="w-full max-w-full overflow-x-hidden">
-          <ContactForm />
+          <Suspense fallback={<div className="text-center py-16 text-gray-400">در حال بارگذاری فرم تماس...</div>}>
+            <ContactForm />
+          </Suspense>
         </div>
 
         <Footer settings={settings} />

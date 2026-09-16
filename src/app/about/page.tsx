@@ -216,9 +216,9 @@ export default async function AboutPage() {
       : DEFAULT_STRATEGIC_GOALS;
 
   const displayWorkstations: WorkstationData[] =
-    page?.workstations && page.workstations.length > 0
+    (page?.workstations && page.workstations.length > 0
       ? page.workstations
-      : DEFAULT_WORKSTATIONS;
+      : DEFAULT_WORKSTATIONS) as any;
 
   const companyGrounds = page?.companyGrounds || [];
 

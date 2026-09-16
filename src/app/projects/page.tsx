@@ -87,7 +87,7 @@ export default async function ProjectsPage() {
           <div className="w-full px-6 md:px-12 lg:px-16">
             {projects.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((project) => (
+                {projects.map((project: any) => (
                   <article
                     key={project.id}
                     className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-[#c49a2c]/20 transition-all duration-300 hover:-translate-y-1"

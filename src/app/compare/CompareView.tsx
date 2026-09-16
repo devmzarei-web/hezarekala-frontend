@@ -10,6 +10,9 @@ import {
   Phone,
   ChevronDown,
   Layers,
+  Sparkles,
+  SlidersHorizontal,
+  CheckCircle2,
 } from "lucide-react";
 import type { Product } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
@@ -64,8 +67,10 @@ export default function CompareView({
   );
 
   /* ── Comparison Rows Aggregation ── */
-  const comparisonRows: SpecRow[] = useMemo(() => {
-    if (!product1 || !product2) return [];
+  const { sharedRows, prod1OnlyRows, prod2OnlyRows } = useMemo(() => {
+    if (!product1 || !product2) {
+      return { sharedRows: [], prod1OnlyRows: [], prod2OnlyRows: [] };
+    }
 
     const specs1 = product1.specifications || [];
     const specs2 = product2.specifications || [];
@@ -133,13 +138,24 @@ export default function CompareView({
       }
     });
 
-    const rows = Array.from(rowsMap.values());
+    const all = Array.from(rowsMap.values());
+    const shared = all.filter((r) => r.val1 !== undefined && r.val2 !== undefined);
+    const p1Only = all.filter((r) => r.val1 !== undefined && r.val2 === undefined);
+    const p2Only = all.filter((r) => r.val1 === undefined && r.val2 !== undefined);
 
     if (onlyDiffs) {
-      return rows.filter((r) => r.isDifferent);
+      return {
+        sharedRows: shared.filter((r) => r.isDifferent),
+        prod1OnlyRows: p1Only,
+        prod2OnlyRows: p2Only,
+      };
     }
 
-    return rows;
+    return {
+      sharedRows: shared,
+      prod1OnlyRows: p1Only,
+      prod2OnlyRows: p2Only,
+    };
   }, [product1, product2, onlyDiffs]);
 
   const swapProducts = () => {
@@ -148,8 +164,12 @@ export default function CompareView({
     setSlug2(temp);
   };
 
+  const totalDifferencesCount = useMemo(() => {
+    return sharedRows.filter((r) => r.isDifferent).length;
+  }, [sharedRows]);
+
   return (
-    <div className="w-full bg-gray-50/60 py-12 md:py-16" dir="rtl">
+    <div className="w-full bg-gray-50/60 py-10 md:py-16" dir="rtl">
       <div className="w-full px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto space-y-8">
         {/* ── Top Controls ── */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-6">
@@ -165,15 +185,23 @@ export default function CompareView({
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-gray-700 cursor-pointer select-none bg-gray-50 hover:bg-gray-100 px-3.5 py-2 rounded-xl border border-gray-200 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={onlyDiffs}
-                  onChange={(e) => setOnlyDiffs(e.target.checked)}
-                  className="rounded text-[#c49a2c] focus:ring-[#c49a2c] w-4 h-4"
-                />
+              <button
+                type="button"
+                onClick={() => setOnlyDiffs(!onlyDiffs)}
+                className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl border transition-all cursor-pointer ${
+                  onlyDiffs
+                    ? "bg-[#c49a2c] text-black border-[#c49a2c] shadow-md shadow-[#c49a2c]/20"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200"
+                }`}
+              >
+                <SlidersHorizontal size={15} />
                 <span>فقط موارد دارای تفاوت</span>
-              </label>
+                {onlyDiffs && (
+                  <span className="bg-black/15 text-black px-1.5 py-0.5 rounded-md text-[10px]">
+                    {totalDifferencesCount}
+                  </span>
+                )}
+              </button>
 
               <button
                 type="button"
@@ -275,11 +303,11 @@ export default function CompareView({
                     href={`/products/${prod.slug}`}
                     className="flex-1 inline-flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-[#0a1628] py-2.5 rounded-xl font-bold text-xs transition-colors"
                   >
-                    <span>مشاهده صفحه محصول</span>
+                    <span>مشاهده مشخصات</span>
                     <ExternalLink size={13} />
                   </Link>
                   <Link
-                    href="/contact"
+                    href={`/contact?product=${encodeURIComponent(prod.slug)}`}
                     className="flex-1 inline-flex items-center justify-center gap-1.5 bg-[#c49a2c] hover:bg-[#d4a82c] text-black py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm"
                   >
                     <Phone size={13} />
@@ -291,54 +319,84 @@ export default function CompareView({
           })}
         </div>
 
-        {/* ── Comparison Specifications Table ── */}
+        {/* ── Comparison Table with Sticky Header Dock ── */}
         <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-right text-xs sm:text-sm">
-              <thead>
-                <tr className="bg-[#060f1c] text-white border-b border-gray-800">
-                  <th className="py-4 px-6 font-bold w-1/3">پارامتر / مشخصه فنی</th>
-                  <th className="py-4 px-6 font-bold w-1/3 text-center">{product1?.title}</th>
-                  <th className="py-4 px-6 font-bold w-1/3 text-center">{product2?.title}</th>
+            <table className="w-full text-right text-xs sm:text-sm min-w-[620px]">
+              {/* Sticky Table Header Dock */}
+              <thead className="sticky top-0 z-20 bg-[#060f1c] text-white shadow-md">
+                <tr className="border-b border-gray-800">
+                  <th className="py-4 px-6 font-bold w-1/3 text-xs sm:text-sm">
+                    پارامتر / مشخصه فنی
+                  </th>
+                  <th className="py-4 px-6 font-bold w-1/3 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="truncate max-w-[180px]">{product1?.title}</span>
+                      <Link
+                        href={`/contact?product=${encodeURIComponent(product1?.slug || "")}`}
+                        className="bg-[#c49a2c] hover:bg-[#d4a82c] text-black px-2 py-1 rounded-lg text-[10px] font-extrabold shrink-0"
+                        title="استعلام"
+                      >
+                        استعلام
+                      </Link>
+                    </div>
+                  </th>
+                  <th className="py-4 px-6 font-bold w-1/3 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="truncate max-w-[180px]">{product2?.title}</span>
+                      <Link
+                        href={`/contact?product=${encodeURIComponent(product2?.slug || "")}`}
+                        className="bg-[#c49a2c] hover:bg-[#d4a82c] text-black px-2 py-1 rounded-lg text-[10px] font-extrabold shrink-0"
+                        title="استعلام"
+                      >
+                        استعلام
+                      </Link>
+                    </div>
+                  </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-100">
-                {comparisonRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="py-12 text-center text-gray-500 font-medium">
-                      مشخصه‌ای برای نمایش یا مقایسه یافت نشد.
-                    </td>
-                  </tr>
-                ) : (
-                  comparisonRows.map((row, idx) => {
-                    const hasBothNums = row.num1 !== null && row.num2 !== null;
-                    const num1Higher = hasBothNums && row.num1! > row.num2!;
-                    const num2Higher = hasBothNums && row.num2! > row.num1!;
-                    const numEqual = hasBothNums && row.num1 === row.num2;
+                {/* ── Group 1: Shared Specifications ── */}
+                {sharedRows.length > 0 && (
+                  <>
+                    <tr className="bg-amber-50/60 border-y border-amber-200/50">
+                      <td colSpan={3} className="py-2.5 px-6 font-extrabold text-[#0a1628] text-xs flex items-center gap-2">
+                        <Sparkles size={14} className="text-[#c49a2c]" />
+                        <span>مشخصات فنی مشترک و قابل مقایسه</span>
+                        <span className="text-[11px] font-semibold text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                          {sharedRows.length} مورد
+                        </span>
+                      </td>
+                    </tr>
+                    {sharedRows.map((row, idx) => {
+                      const hasBothNums = row.num1 !== null && row.num2 !== null;
+                      const num1Higher = hasBothNums && row.num1! > row.num2!;
+                      const num2Higher = hasBothNums && row.num2! > row.num1!;
+                      const numEqual = hasBothNums && row.num1 === row.num2;
 
-                    return (
-                      <tr
-                        key={row.key || idx}
-                        className={`transition-colors hover:bg-gray-50/80 ${
-                          idx % 2 === 0 ? "bg-white" : "bg-gray-50/40"
-                        }`}
-                      >
-                        {/* Spec Title & Unit */}
-                        <td className="py-4 px-6 font-bold text-[#0a1628]">
-                          <span>{row.label}</span>
-                          {row.unit && (
-                            <span
-                              dir="ltr"
-                              className="inline-block text-[11px] text-gray-400 font-normal mr-1.5"
-                            >
-                              ({row.unit})
-                            </span>
-                          )}
-                        </td>
+                      return (
+                        <tr
+                          key={row.key || idx}
+                          className={`transition-colors hover:bg-gray-50/80 ${
+                            idx % 2 === 0 ? "bg-white" : "bg-gray-50/40"
+                          }`}
+                        >
+                          {/* Spec Title & Unit */}
+                          <td className="py-4 px-6 font-bold text-[#0a1628]">
+                            <span>{row.label}</span>
+                            {row.unit && (
+                              <span
+                                dir="ltr"
+                                className="inline-block text-[11px] text-gray-400 font-normal mr-1.5"
+                              >
+                                ({row.unit})
+                              </span>
+                            )}
+                          </td>
 
-                        {/* Product 1 Value */}
-                        <td className="py-4 px-6 text-center">
-                          {row.val1 !== undefined ? (
+                          {/* Product 1 Value */}
+                          <td className="py-4 px-6 text-center">
                             <div className="inline-flex flex-col items-center gap-1.5">
                               <span
                                 className={`px-3 py-1 rounded-xl text-xs sm:text-sm border transition-all ${
@@ -356,7 +414,6 @@ export default function CompareView({
                                 <SpecValueDisplay value={row.val1} unit={row.unit} />
                               </span>
 
-                              {/* Delta badge */}
                               {num1Higher && row.delta !== null && (
                                 <span
                                   className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50/60 px-2 py-0.5 rounded-md border border-emerald-200"
@@ -382,14 +439,10 @@ export default function CompareView({
                                 </span>
                               )}
                             </div>
-                          ) : (
-                            <span className="text-gray-300 font-bold">—</span>
-                          )}
-                        </td>
+                          </td>
 
-                        {/* Product 2 Value */}
-                        <td className="py-4 px-6 text-center">
-                          {row.val2 !== undefined ? (
+                          {/* Product 2 Value */}
+                          <td className="py-4 px-6 text-center">
                             <div className="inline-flex flex-col items-center gap-1.5">
                               <span
                                 className={`px-3 py-1 rounded-xl text-xs sm:text-sm border transition-all ${
@@ -407,7 +460,6 @@ export default function CompareView({
                                 <SpecValueDisplay value={row.val2} unit={row.unit} />
                               </span>
 
-                              {/* Delta badge */}
                               {num2Higher && row.delta !== null && (
                                 <span
                                   className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50/60 px-2 py-0.5 rounded-md border border-emerald-200"
@@ -433,35 +485,84 @@ export default function CompareView({
                                 </span>
                               )}
                             </div>
-                          ) : (
-                            <span className="text-gray-300 font-bold">—</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                )}
+
+                {/* ── Group 2: Product 1 Exclusive Specs ── */}
+                {prod1OnlyRows.length > 0 && !onlyDiffs && (
+                  <>
+                    <tr className="bg-gray-100/80 border-y border-gray-200">
+                      <td colSpan={3} className="py-2.5 px-6 font-extrabold text-[#0a1628] text-xs flex items-center gap-2">
+                        <CheckCircle2 size={14} className="text-gray-500" />
+                        <span>مشخصات اختصاصی {product1?.title}</span>
+                        <span className="text-[11px] font-semibold text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                          {prod1OnlyRows.length} مورد
+                        </span>
+                      </td>
+                    </tr>
+                    {prod1OnlyRows.map((row, idx) => (
+                      <tr key={row.key || idx} className="bg-white hover:bg-gray-50/80">
+                        <td className="py-4 px-6 font-bold text-[#0a1628]">
+                          <span>{row.label}</span>
+                          {row.unit && (
+                            <span dir="ltr" className="inline-block text-[11px] text-gray-400 font-normal mr-1.5">
+                              ({row.unit})
+                            </span>
                           )}
                         </td>
+                        <td className="py-4 px-6 text-center">
+                          <SpecValueDisplay value={row.val1} unit={row.unit} />
+                        </td>
+                        <td className="py-4 px-6 text-center text-gray-300 font-bold">—</td>
                       </tr>
-                    );
-                  })
+                    ))}
+                  </>
+                )}
+
+                {/* ── Group 3: Product 2 Exclusive Specs ── */}
+                {prod2OnlyRows.length > 0 && !onlyDiffs && (
+                  <>
+                    <tr className="bg-gray-100/80 border-y border-gray-200">
+                      <td colSpan={3} className="py-2.5 px-6 font-extrabold text-[#0a1628] text-xs flex items-center gap-2">
+                        <CheckCircle2 size={14} className="text-gray-500" />
+                        <span>مشخصات اختصاصی {product2?.title}</span>
+                        <span className="text-[11px] font-semibold text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                          {prod2OnlyRows.length} مورد
+                        </span>
+                      </td>
+                    </tr>
+                    {prod2OnlyRows.map((row, idx) => (
+                      <tr key={row.key || idx} className="bg-white hover:bg-gray-50/80">
+                        <td className="py-4 px-6 font-bold text-[#0a1628]">
+                          <span>{row.label}</span>
+                          {row.unit && (
+                            <span dir="ltr" className="inline-block text-[11px] text-gray-400 font-normal mr-1.5">
+                              ({row.unit})
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 text-center text-gray-300 font-bold">—</td>
+                        <td className="py-4 px-6 text-center">
+                          <SpecValueDisplay value={row.val2} unit={row.unit} />
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+
+                {sharedRows.length === 0 && prod1OnlyRows.length === 0 && prod2OnlyRows.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-12 text-center text-gray-500 font-medium">
+                      مشخصه‌ای برای نمایش یا مقایسه یافت نشد.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* ── CTA ── */}
-        <div className="bg-[#060f1c] text-white rounded-3xl p-8 text-center space-y-4">
-          <h3 className="text-lg sm:text-xl font-extrabold text-white">
-            نیاز به محاسبات دقیق‌تر و انتخاب مدل مناسب دارید؟
-          </h3>
-          <p className="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            کارشناسان هیدرولیک و مهندسی فروش هزاره کالا آماده‌اند تا بر اساس نقطه کاری (Duty Point)، هد و دبی درخواستی شما، بهینه‌ترین پمپ را پیشنهاد دهند.
-          </p>
-          <div className="pt-2">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-[#c49a2c] hover:bg-[#d4a82c] text-black px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md"
-            >
-              <Phone size={15} />
-              <span>ارتباط با واحد مهندسی فروش</span>
-            </Link>
           </div>
         </div>
       </div>

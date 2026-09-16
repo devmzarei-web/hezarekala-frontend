@@ -14,6 +14,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   piston: "پیستونی",
   gear: "دنده‌ای",
   multistage: "طبقاتی",
+  generators: "دیزل ژنراتور و موتور دیزلی",
+  "sludge-pumps": "پمپ لجن‌کش و خودمکش",
+  "gear-pumps": "پمپ دنده‌ای پرتابل",
+  "wet-blast": "وت بلاست و آماده‌سازی سطح",
+  machining: "خدمات ماشین‌کاری و تراشکاری",
   other: "سایر",
 };
 
@@ -37,4 +42,11 @@ export function getProductCategorySlug(category: ProductCategoryValue): string {
   if (typeof category === "string") return category;
 
   return category.slug || category.id || "";
+}
+
+export function getProductCategoryInfo(category: ProductCategoryValue): { title: string; slug: string } {
+  return {
+    title: getProductCategoryLabel(category),
+    slug: getProductCategorySlug(category),
+  };
 }

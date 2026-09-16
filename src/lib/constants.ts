@@ -20,6 +20,29 @@ export const COMPANY = {
 /* ── Default Industrial Products Catalog ── */
 export const DEFAULT_PRODUCTS: Product[] = [
   {
+    id: "prod-dg-45kva",
+    title: "دیزل ژنراتور صنعتی ۴۵ کاوا (45 KVA Diesel Generator)",
+    slug: "diesel-generator-45kva",
+    category: "generators",
+    shortDescription:
+      "دیزل ژنراتور صنعتی ۴۵ کاوا (۳۶ کیلووات) مجهز به موتور دیزل چهارسیلندر آب‌خنک، آلترناتور سنکرون براشلس، کنترل‌کننده دیجیتال هوشمند و کانوپی سایلنت با عایق صوتی چندلایه.",
+    metaTitle: "دیزل ژنراتور ۴۵ کاوا | هزاره کالا دانش اروند",
+    metaDescription:
+      "مشخصات فنی و استعلام قیمت دیزل ژنراتور صنعتی ۴۵ KVA مجهز به موتور دیزل سنگین و کانوپی سایلنت ساخت هزاره کالا دانش اروند.",
+    isFeatured: true,
+    isActive: true,
+    order: 0,
+    specifications: [
+      { standardFeature: "kva", value: "45", unit: "kVA", isNumeric: true },
+      { standardFeature: "power", value: "36", unit: "kW", isNumeric: true },
+      { standardFeature: "speed", value: "1500", unit: "RPM", isNumeric: true },
+      { standardFeature: "coolingType", value: "رادیاتور آب‌خنک صنعتی مدار بسته", isNumeric: false },
+      { standardFeature: "engineModel", value: "موتور دیزل سنگین چهارسیلندر خطی", isNumeric: false },
+      { standardFeature: "custom", customLabel: "فرکانس و ولتاژ", value: "50 Hz / 400V - سه‌فاز", isNumeric: false },
+      { standardFeature: "custom", customLabel: "نوع کانوپی", value: "کانوپی ماژولار سایلنت ضدباران و عایق صوت", isNumeric: false },
+    ],
+  },
+  {
     id: "prod-hkda-dgp-4d-001",
     title: "پکیج دیزل پمپ پرتابل ۴ اینچ مدل HKDA.DGP.4D.001",
     slug: "portable-diesel-gear-pump-hkda-4d001",
@@ -159,4 +182,4 @@ export const DEFAULT_PRODUCTS: Product[] = [
       { standardFeature: "custom", customLabel: "نوع شاسی", value: "شاسی چرخ‌دار کارگاهی قابل‌حمل", isNumeric: false },
     ],
   },
-];
+] as unknown as Product[];

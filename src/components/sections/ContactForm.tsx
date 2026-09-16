@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Send, CheckCircle, AlertCircle } from "lucide-react";
 import { PAYLOAD_API_URL } from "@/lib/env";
 
@@ -14,14 +15,31 @@ const SUBJECTS = [
 ];
 
 export default function ContactForm() {
+  const searchParams = useSearchParams();
+  const productParam = searchParams.get("product");
+
   const [formData, setFormData] = useState({
     fullName: "",
     company: "",
     phone: "",
     email: "",
-    subject: "",
-    message: "",
+    subject: productParam ? "استعلام قیمت" : "",
+    message: productParam
+      ? `درخواست استعلام قیمت، شرایط تحویل و مشخصات فنی برای محصول: ${productParam}`
+      : "",
   });
+
+  useEffect(() => {
+    if (productParam) {
+      setFormData((prev) => ({
+        ...prev,
+        subject: "استعلام قیمت",
+        message:
+          prev.message ||
+          `درخواست استعلام قیمت، شرایط تحویل و مشخصات فنی برای محصول: ${productParam}`,
+      }));
+    }
+  }, [productParam]);
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");

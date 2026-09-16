@@ -76,16 +76,16 @@ export default async function Home() {
         <Hero slides={heroSlides} heroVideoUrl={heroVideoUrl} settings={settings} />
 
         {/* 2. Why Us - Light (White) */}
-        {whyUs?.whyUsCards?.length ? <WhyUs title={whyUs.title} subtitle={whyUs.subtitle} theme="light" backgroundImage={bg(whyUs)} cards={whyUs.whyUsCards} /> : null}
+        {whyUs?.whyUsCards?.length ? <WhyUs title={whyUs.title} subtitle={whyUs.subtitle || undefined} theme="light" backgroundImage={bg(whyUs)} cards={whyUs.whyUsCards as any} /> : null}
 
         {/* 3. Products - Dark */}
         <ProductCards3D products={products || []} />
 
         {/* 4. Capabilities - Light (White) */}
-        {capabilities?.capabilityItems?.length ? <CapabilitiesBento title={capabilities.title} subtitle={capabilities.subtitle} theme="light" backgroundImage={bg(capabilities)} items={capabilities.capabilityItems} /> : null}
+        {capabilities?.capabilityItems?.length ? <CapabilitiesBento title={capabilities.title} subtitle={capabilities.subtitle || undefined} theme="light" backgroundImage={bg(capabilities)} items={capabilities.capabilityItems as any} /> : null}
 
         {/* 5. Process - Dark */}
-        {process?.processSteps?.length ? <Process title={process.title} subtitle={process.subtitle} theme="dark" backgroundImage={bg(process)} steps={process.processSteps} /> : null}
+        {process?.processSteps?.length ? <Process title={process.title} subtitle={process.subtitle || undefined} theme="dark" backgroundImage={bg(process)} steps={process.processSteps as any} /> : null}
 
         {/* 6. Projects - Light (White) */}
         <Projects projects={projects || []} />

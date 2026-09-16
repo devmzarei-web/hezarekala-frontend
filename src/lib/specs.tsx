@@ -3,7 +3,13 @@ import React from "react";
 export const STANDARD_FEATURE_LABELS: Record<string, string> = {
   flowRate: "ظرفیت انتقال (دبی)",
   head: "حداکثر هد انتقال",
-  power: "توان الکتروموتور مورد نیاز",
+  power: "توان الکتروموتور / محرک",
+  kva: "توان نامی دیزل ژنراتور (KVA)",
+  engineModel: "مدل موتور دیزل",
+  coolingType: "سیستم خنک‌کننده",
+  suctionDepth: "حداکثر عمق مکش",
+  solidsHandling: "حداکثر قطر عبور ذرات جامد",
+  tableSize: "ابعاد میز کارگیر",
   speed: "محدوده سرعت کاری (RPM)",
   standard: "استاندارد ساخت و طراحی",
   impellerMaterial: "متریال پروانه",
@@ -18,9 +24,9 @@ export const STANDARD_FEATURE_LABELS: Record<string, string> = {
 
 /* ── Label Resolver ── */
 export function getSpecLabel(spec: {
-  standardFeature?: string;
-  customLabel?: string;
-  label?: string;
+  standardFeature?: string | null;
+  customLabel?: string | null;
+  label?: string | null;
 }): string {
   if (spec.label && spec.label.trim()) return spec.label.trim();
   if (spec.standardFeature === "custom" && spec.customLabel && spec.customLabel.trim()) {
@@ -85,11 +91,19 @@ export function SpecValueDisplay({
     );
   }
 
+  const parsedNum = parseNumericValue(strVal);
+  const displayVal =
+    parsedNum !== null && !isNaN(Number(strVal.replace(/,/g, "")))
+      ? formatNumberPersian(parsedNum)
+      : strVal;
+
   return (
-    <span className={`inline-flex items-center gap-1.5 ${className}`} dir="ltr">
-      <span className="font-bold">{strVal}</span>
+    <span className={`inline-flex items-center gap-1.5 ${className}`} dir="rtl">
+      <span className="font-bold">{displayVal}</span>
       {strUnit && !strVal.toLowerCase().includes(strUnit.toLowerCase()) && (
-        <span className="text-[11px] opacity-80 font-semibold">{strUnit}</span>
+        <span className="text-[11px] opacity-80 font-semibold" dir="ltr">
+          {strUnit}
+        </span>
       )}
     </span>
   );

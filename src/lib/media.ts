@@ -1,9 +1,14 @@
 import { CMS_URL } from "@/lib/env";
 
-interface MediaLike {
-  url?: string;
-  filename?: string;
-  alt?: string;
+export interface MediaLike {
+  url?: string | null;
+  filename?: string | null;
+  alt?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  [key: string]: any;
 }
 
 function isAbsoluteUrl(url: string): boolean {

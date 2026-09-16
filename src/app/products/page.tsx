@@ -1,54 +1,43 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getProducts, getSettings, getPage } from "@/lib/payload";
+import { getProducts, getProductCategories, getSettings, getPage } from "@/lib/payload";
 import { SITE_URL } from "@/lib/env";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { getMediaUrl } from "@/lib/media";
-import { getProductCategoryLabel } from "@/lib/product-category";
+import ProductsCatalogView from "./ProductsCatalogView";
+import type { Product, ProductCategory } from "@/payload-types";
 
 export const revalidate = 60;
 
-const CATEGORY_LABELS: Record<string, string> = {
-  centrifugal: "سانتریفیوژ",
-  piston: "پیستونی",
-  gear: "دنده‌ای",
-  multistage: "طبقاتی",
-  other: "سایر",
-};
-
-type ProductItem = {
-  id: string;
-  title: string;
-  slug: string;
-  shortDescription?: string;
-  category?: string;
-  featuredImage?:
-    | string
-    | {
-        url?: string;
-        alt?: string;
-        filename?: string;
-      };
-};
+const FALLBACK_CATEGORIES = [
+  { slug: "generators", title: "دیزل ژنراتور و موتور دیزلی" },
+  { slug: "sludge-pumps", title: "پمپ لجن‌کش و خودمکش" },
+  { slug: "gear-pumps", title: "پمپ دنده‌ای پرتابل" },
+  { slug: "centrifugal", title: "پمپ سانتریفیوژ" },
+  { slug: "piston", title: "پمپ پیستونی" },
+  { slug: "gear", title: "پمپ دنده‌ای" },
+  { slug: "multistage", title: "پمپ طبقاتی" },
+  { slug: "wet-blast", title: "وت بلاست و آماده‌سازی سطح" },
+  { slug: "machining", title: "خدمات ماشین‌کاری سنگین" },
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("products");
   return {
-    title: page?.metaTitle || page?.title || "محصولات",
+    title: page?.metaTitle || page?.title || "کاتالوگ محصولات و تجهیزات صنعتی",
     description:
       page?.metaDescription ||
       page?.excerpt ||
-      "پمپ‌های صنعتی هزاره کالا: سانتریفیوژ، پیستونی، دنده‌ای و طبقاتی برای صنایع نفت، گاز، پتروشیمی و نیروگاهی. تولید ایران - شهرک صنعتی آبادان.",
+      "تجهیزات صنعتی و پمپ‌های سنگین هزاره کالا دانش اروند: دیزل ژنراتور، پمپ خودمکش لجن‌کش، پمپ دنده‌ای پرتابل، وت بلاست و قطعات صنعتی با استعلام مستقیم قیمت.",
     alternates: {
       canonical: `${SITE_URL}/products`,
     },
     openGraph: {
       type: "website",
-      title: page?.metaTitle || page?.title || "محصولات هزاره کالا",
+      title: page?.metaTitle || page?.title || "کاتالوگ محصولات | هزاره کالا دانش اروند",
       description: page?.metaDescription || page?.excerpt || "",
       images: page?.heroImage ? [{ url: getMediaUrl(page.heroImage) }] : [],
     },
@@ -56,27 +45,63 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProductsPage() {
-  const [products, settings, page] = await Promise.all([
+  const [products, cmsCategories, settings, page] = await Promise.all([
     getProducts(),
+    getProductCategories(),
     getSettings(),
     getPage("products"),
   ]);
 
-  // ItemList Schema
+  // Combine CMS categories with fallbacks
+  const categoriesMap = new Map<string, { id?: string; title: string; slug: string }>();
+
+  if (cmsCategories && cmsCategories.length > 0) {
+    for (const cat of cmsCategories) {
+      if (cat && cat.slug) {
+        categoriesMap.set(cat.slug, {
+          id: cat.id,
+          title: cat.title,
+          slug: cat.slug,
+        });
+      }
+    }
+  }
+
+  // Ensure default/new categories exist in filter bar
+  for (const fb of FALLBACK_CATEGORIES) {
+    if (!categoriesMap.has(fb.slug)) {
+      categoriesMap.set(fb.slug, fb);
+    }
+  }
+
+  const categoryList = Array.from(categoriesMap.values());
+
+  // Schema.org ItemList for zero prices B2B
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    itemListElement: products?.map((product: ProductItem, index: number) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@type": "Product",
-        name: product.title,
-        description: product.shortDescription || "",
-        image: product.featuredImage ? getMediaUrl(product.featuredImage) : "",
-        url: `${SITE_URL}/products/${product.slug}`,
-      },
-    })) || [],
+    itemListElement:
+      products?.map((product: Product, index: number) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Product",
+          name: product.title,
+          description: product.shortDescription || "",
+          image: product.featuredImage ? getMediaUrl(product.featuredImage) : "",
+          url: `${SITE_URL}/products/${product.slug}`,
+          offers: {
+            "@type": "AggregateOffer",
+            priceCurrency: "IRR",
+            price: "Call for Price",
+            availability: "https://schema.org/InStock",
+            seller: {
+              "@type": "Organization",
+              name: "هزاره کالا دانش اروند",
+            },
+          },
+        },
+      })) || [],
   };
 
   return (
@@ -97,71 +122,26 @@ export default async function ProductsPage() {
         <Header settings={settings} />
 
         <PageHero
-          title={page?.title || "محصولات"}
-          subtitle={page?.subtitle || "محصولات ما"}
-          excerpt={page?.excerpt || ""}
+          title={page?.title || "محصولات و تجهیزات صنعتی"}
+          subtitle={page?.subtitle || "تولیدات مهندسی و ماشین‌آلات صنعتی"}
+          excerpt={page?.excerpt || "تولید انواع پمپ‌های صنعتی، دیزل ژنراتورها، تجهیزات پرتابل و خدمات ماشین‌کاری فوق سنگین"}
           image={page?.heroImage}
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "محصولات" }]}
         />
 
-        <div className="w-full px-4 md:px-6 lg:px-8 py-16">
-          {products && products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {products.map((product: ProductItem) => {
-                const imageAlt =
-                  product.featuredImage && typeof product.featuredImage === "object" && "alt" in product.featuredImage
-                    ? product.featuredImage.alt || product.title
-                    : product.title;
-                return (
-                  <article key={product.id}>
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#c49a2c]/20 transition-all duration-300 flex flex-col"
-                    >
-                      <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
-                        <img
-                          src={getMediaUrl(product.featuredImage)}
-                          alt={imageAlt}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        {product.category && (
-                          <span className="absolute top-3 right-3 bg-[#c49a2c] text-black text-xs font-bold px-3 py-1 rounded-full">
-                            {getProductCategoryLabel(product.category)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-5 flex flex-col flex-1">
-                        <h3 className="text-lg font-bold text-[#0a1628] mb-2 group-hover:text-[#c49a2c] transition-colors line-clamp-1">
-                          {product.title}
-                        </h3>
-                        {product.shortDescription && (
-                          <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                            {product.shortDescription}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <span className="text-[#c49a2c] font-bold text-xs flex items-center gap-1">
-                            مشاهده مشخصات فنی
-                            <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-                          </span>
-                          <span className="text-gray-400 font-medium text-[11px]">
-                            قابلیت مقایسه
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <h2 className="text-xl font-bold text-gray-700 mb-2">محصولی یافت نشد</h2>
-              <p className="text-gray-500">در حال حاضر محصولی برای نمایش وجود ندارد.</p>
-            </div>
-          )}
+        <div className="w-full px-4 md:px-6 lg:px-8 py-10 md:py-14">
+          <Suspense
+            fallback={
+              <div className="text-center py-20 text-gray-400">
+                در حال بارگذاری کاتالوگ محصولات...
+              </div>
+            }
+          >
+            <ProductsCatalogView
+              products={products || []}
+              categories={categoryList}
+            />
+          </Suspense>
         </div>
 
         <Footer settings={settings} />

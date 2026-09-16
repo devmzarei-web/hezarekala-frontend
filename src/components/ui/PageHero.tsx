@@ -6,7 +6,7 @@ interface PageHeroProps {
   title: string;
   subtitle?: string;
   excerpt?: string;
-  image?: Media | string;
+  image?: Media | string | null;
   breadcrumb?: { label: string; href?: string }[];
 }
 
