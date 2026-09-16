@@ -161,7 +161,7 @@ export async function getProductCategories(): Promise<ProductCategory[]> {
 /* ── Products ── */
 export async function getFeaturedProducts(): Promise<Product[]> {
   const data = await fetchAPI<{ docs: Product[] }>(
-    "/products?where[isFeatured][equals]=true&where[isActive][equals]=true&sort=-order&limit=6&depth=2"
+    "/products?where[isFeatured][equals]=true&where[isActive][equals]=true&sort=order&limit=6&depth=2"
   );
 
   return data?.docs && data.docs.length > 0
@@ -171,7 +171,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
   const data = await fetchAPI<{ docs: Product[] }>(
-    "/products?where[isActive][equals]=true&sort=-order&limit=50&depth=2"
+    "/products?where[isActive][equals]=true&sort=order&limit=50&depth=2"
   );
 
   const products = data?.docs && data.docs.length > 0 ? data.docs : DEFAULT_PRODUCTS;
