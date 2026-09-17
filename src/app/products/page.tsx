@@ -8,21 +8,11 @@ import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
 import { getMediaUrl } from "@/lib/media";
 import ProductsCatalogView from "./ProductsCatalogView";
+import IndustrialDivider from "@/components/ui/IndustrialDivider";
+import { getProductCategorySlug, getProductCategoryLabel } from "@/lib/product-category";
 import type { Product, ProductCategory } from "@/payload-types";
 
 export const revalidate = 60;
-
-const FALLBACK_CATEGORIES = [
-  { slug: "generators", title: "دیزل ژنراتور و موتور دیزلی" },
-  { slug: "sludge-pumps", title: "پمپ لجن‌کش و خودمکش" },
-  { slug: "gear-pumps", title: "پمپ دنده‌ای پرتابل" },
-  { slug: "centrifugal", title: "پمپ سانتریفیوژ" },
-  { slug: "piston", title: "پمپ پیستونی" },
-  { slug: "gear", title: "پمپ دنده‌ای" },
-  { slug: "multistage", title: "پمپ طبقاتی" },
-  { slug: "wet-blast", title: "وت بلاست و آماده‌سازی سطح" },
-  { slug: "machining", title: "خدمات ماشین‌کاری سنگین" },
-];
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("products");
@@ -52,36 +42,61 @@ export default async function ProductsPage() {
     getPage("products"),
   ]);
 
-  // Combine CMS categories with fallbacks
-  const categoriesMap = new Map<string, { id?: string; title: string; slug: string }>();
+  // Filter active published products
+  const activeProducts = products?.filter((p: Product) => p.isActive !== false) || [];
+
+  // Compute live product counts per category slug
+  const categoryCounts: Record<string, number> = {};
+  for (const p of activeProducts) {
+    const slug = getProductCategorySlug(p.category);
+    if (slug) {
+      categoryCounts[slug] = (categoryCounts[slug] || 0) + 1;
+    }
+  }
+
+  // Only include categories that are active AND have at least 1 published product
+  const categoriesMap = new Map<string, { id?: string; title: string; slug: string; count: number }>();
 
   if (cmsCategories && cmsCategories.length > 0) {
     for (const cat of cmsCategories) {
-      if (cat && cat.slug) {
-        categoriesMap.set(cat.slug, {
-          id: cat.id,
-          title: cat.title,
-          slug: cat.slug,
+      if (cat && cat.slug && cat.isActive !== false) {
+        const count = categoryCounts[cat.slug] || 0;
+        if (count > 0) {
+          categoriesMap.set(cat.slug, {
+            id: cat.id,
+            title: cat.title,
+            slug: cat.slug,
+            count,
+          });
+        }
+      }
+    }
+  }
+
+  // Also include any active categories derived from existing products
+  for (const p of activeProducts) {
+    const slug = getProductCategorySlug(p.category);
+    if (slug && !categoriesMap.has(slug)) {
+      const count = categoryCounts[slug] || 0;
+      if (count > 0) {
+        categoriesMap.set(slug, {
+          title: getProductCategoryLabel(p.category) || slug,
+          slug,
+          count,
         });
       }
     }
   }
 
-  // Ensure default/new categories exist in filter bar
-  for (const fb of FALLBACK_CATEGORIES) {
-    if (!categoriesMap.has(fb.slug)) {
-      categoriesMap.set(fb.slug, fb);
-    }
-  }
-
-  const categoryList = Array.from(categoriesMap.values());
+  // Order categories by product count descending (most popular first)
+  const categoryList = Array.from(categoriesMap.values()).sort((a, b) => b.count - a.count);
 
   // Schema.org ItemList for zero prices B2B
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     itemListElement:
-      products?.map((product: Product, index: number) => ({
+      activeProducts.map((product: Product, index: number) => ({
         "@type": "ListItem",
         position: index + 1,
         item: {
@@ -118,7 +133,7 @@ export default async function ProductsPage() {
         ]}
       />
 
-      <main className="min-h-screen bg-gray-50" dir="rtl">
+      <main className="min-h-screen bg-slate-50/60" dir="rtl">
         <Header settings={settings} />
 
         <PageHero
@@ -129,7 +144,17 @@ export default async function ProductsPage() {
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "محصولات" }]}
         />
 
-        <div className="w-full px-4 md:px-6 lg:px-8 py-10 md:py-14">
+        {/* Industrial Section Separator */}
+        <div className="w-full px-4 md:px-6 lg:px-8">
+          <IndustrialDivider
+            variant="ruler"
+            coordinates="30°20'N 48°17'E"
+            plantLabel="CERTIFIED INDUSTRIAL EQUIPMENT · HK-2018"
+            className="my-6 md:my-8"
+          />
+        </div>
+
+        <div className="w-full px-4 md:px-6 lg:px-8 pb-10 md:pb-14">
           <Suspense
             fallback={
               <div className="text-center py-20 text-gray-400">
@@ -138,7 +163,7 @@ export default async function ProductsPage() {
             }
           >
             <ProductsCatalogView
-              products={products || []}
+              products={activeProducts}
               categories={categoryList}
             />
           </Suspense>

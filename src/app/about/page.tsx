@@ -34,6 +34,7 @@ import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import WorkstationsExplorer, { type WorkstationData } from "@/components/sections/WorkstationsExplorer";
+import IndustrialDivider from "@/components/ui/IndustrialDivider";
 
 export const revalidate = 60;
 
@@ -255,7 +256,7 @@ export default async function AboutPage() {
         ]}
       />
 
-      <main className="min-h-screen bg-white" dir="rtl">
+      <main className="min-h-screen bg-slate-50/50" dir="rtl">
         <Header settings={settings} />
 
         {/* 1. Hero Header */}
@@ -406,6 +407,15 @@ export default async function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Precision Engineering Chapter Divider */}
+        <div className="w-full px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto my-6">
+          <IndustrialDivider
+            variant="ruler"
+            coordinates="30°20'N 48°17'E"
+            plantLabel="CORPORATE MISSION & ENGINEERING STANDARDS"
+          />
+        </div>
 
         {/* 4. Strategic Mission, Vision & Values */}
         <section className="py-16 md:py-20 bg-gray-50 border-y border-gray-100" aria-labelledby="strategic-heading">

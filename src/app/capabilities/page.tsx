@@ -8,6 +8,7 @@ import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
 import CapabilitiesExplorer from "@/components/sections/CapabilitiesExplorer";
+import IndustrialDivider from "@/components/ui/IndustrialDivider";
 import Link from "next/link";
 import {
   Layers,
@@ -90,6 +91,21 @@ const INDUSTRIAL_SECTORS = [
   },
 ];
 
+
+/* ── Helper to verify meaningful rich-text content exists ── */
+function hasMeaningfulContent(content: any): boolean {
+  if (!content || !content.root) return false;
+  const children = content.root.children;
+  if (!Array.isArray(children) || children.length === 0) return false;
+  return children.some((child: any) => {
+    if (child.text && child.text.trim()) return true;
+    if (Array.isArray(child.children) && child.children.length > 0) {
+      return child.children.some((c: any) => c.text && c.text.trim());
+    }
+    return false;
+  });
+}
+
 export default async function CapabilitiesPage() {
   const [settings, page] = await Promise.all([getSettings(), getPage("capabilities")]);
 
@@ -102,7 +118,7 @@ export default async function CapabilitiesPage() {
         ]}
       />
 
-      <main className="min-h-screen bg-white" dir="rtl">
+      <main className="min-h-screen bg-slate-50/50" dir="rtl">
         <Header settings={settings} />
 
         <PageHero
@@ -157,14 +173,23 @@ export default async function CapabilitiesPage() {
         {/* ── Dynamic 7-Divisions Capabilities Explorer (1920 Full Width) ── */}
         <CapabilitiesExplorer />
 
-        {/* ── CMS RichText Content (If Authored in Payload CMS) ── */}
-        {page?.content && (
-          <section className="py-16 bg-white border-b border-gray-100">
+        {/* ── CMS RichText Content (Strictly suppressed if empty) ── */}
+        {hasMeaningfulContent(page?.content) && (
+          <section className="py-12 bg-white border-b border-gray-100">
             <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 max-w-6xl mx-auto">
-              <RichTextRenderer content={page.content} />
+              <RichTextRenderer content={page!.content} />
             </div>
           </section>
         )}
+
+        {/* ── Precision Engineering Chapter Divider ── */}
+        <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 my-2">
+          <IndustrialDivider
+            variant="ruler"
+            coordinates="30°20'N 48°17'E"
+            plantLabel="CENTRAL MACHINE SHOP · ABADAN COMPLEX"
+          />
+        </div>
 
         {/* ── Industrial Applications Matrix (1920 Full Width) ── */}
         <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
@@ -184,7 +209,7 @@ export default async function CapabilitiesPage() {
                 return (
                   <div
                     key={i}
-                    className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                    className="bg-gradient-to-br from-white via-slate-50 to-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-[#c49a2c]/40 transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       <div className="w-10 h-10 rounded-lg bg-[#0a1628] text-[#c49a2c] flex items-center justify-center mb-4">

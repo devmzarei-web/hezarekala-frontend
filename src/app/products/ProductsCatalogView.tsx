@@ -42,7 +42,12 @@ export default function ProductsCatalogView({
     return counts;
   }, [products]);
 
-  // Filter products
+  // Filter categories to ONLY those that have existing products
+  const populatedCategories = useMemo(() => {
+    return categories.filter((c) => (categoryCounts[c.slug] || 0) > 0);
+  }, [categories, categoryCounts]);
+
+  // Filter products by activeCategory
   const filteredProducts = useMemo(() => {
     if (activeCategory === "all" || !activeCategory) {
       return products;
@@ -69,37 +74,38 @@ export default function ProductsCatalogView({
 
   return (
     <div className="w-full">
+      {/* Category Filter Bar */}
       <ProductFilterBar
-        categories={categories}
+        categories={populatedCategories}
         activeCategory={activeCategory}
         onSelectCategory={handleSelectCategory}
         totalCount={products.length}
         categoryCounts={categoryCounts}
       />
 
+      {/* Catalog Grid */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id || product.slug} product={product} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 bg-white rounded-2xl border border-dashed border-gray-200">
-          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200/80 p-8">
+          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-400">
             <PackageOpen size={32} />
           </div>
-          <h3 className="text-lg font-bold text-[#0a1628] mb-2">
+          <h3 className="text-lg font-bold text-gray-800 mb-2">
             محصولی در این دسته‌بندی یافت نشد
           </h3>
-          <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
-            در حال حاضر برای این دسته‌بندی محصولی تعریف نشده است. جهت ثبت سفارش اختصاصی یا استعلام فنی با ما تماس بگیرید.
+          <p className="text-sm text-gray-500 mb-6">
+            می‌توانید سایر دسته‌بندی‌ها را بررسی کنید یا کل کاتالوگ را مشاهده فرمایید.
           </p>
           <button
-            type="button"
             onClick={() => handleSelectCategory("all")}
-            className="inline-flex items-center gap-2 bg-[#0a1628] hover:bg-[#162033] text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0a1628] text-white text-sm font-semibold hover:bg-[#c49a2c] hover:text-black transition-colors"
           >
-            <RotateCcw size={14} />
+            <RotateCcw size={16} />
             <span>مشاهده همه محصولات</span>
           </button>
         </div>

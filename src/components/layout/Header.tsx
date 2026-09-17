@@ -2,20 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Phone, Menu, X } from "lucide-react";
+import { Phone, Menu, X, ArrowUpRight } from "lucide-react";
 import type { Settings } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 
-const NAV_ITEMS = [
-  { href: "/", label: "خانه" },
-  { href: "/products", label: "محصولات" },
-  { href: "/capabilities", label: "توانمندی‌ها" },
-  { href: "/sectors", label: "صنایع هدف" },
-  { href: "/projects", label: "پروژه‌ها" },
-  { href: "/gallery", label: "گالری" },
-  { href: "/about", label: "درباره ما" },
-  { href: "/blog", label: "وبلاگ" },
-  { href: "/contact", label: "تماس با ما" },
+const DEFAULT_NAV_ITEMS = [
+  { href: "/", label: "خانه", isExternal: false },
+  { href: "/products", label: "محصولات", isExternal: false },
+  { href: "/capabilities", label: "توانمندی‌ها", isExternal: false },
+  { href: "/sectors", label: "صنایع هدف", isExternal: false },
+  { href: "/projects", label: "پروژه‌ها", isExternal: false },
+  { href: "/gallery", label: "گالری", isExternal: false },
+  { href: "/about", label: "درباره ما", isExternal: false },
+  { href: "/blog", label: "وبلاگ", isExternal: false },
+  { href: "/contact", label: "تماس با ما", isExternal: false },
 ];
 
 interface HeaderProps {
@@ -34,6 +34,14 @@ export default function Header({ settings }: HeaderProps) {
 
   const logoUrl = getMediaUrl(settings?.logo);
   const siteName = settings?.siteName || "هزاره کالا";
+
+  // Dynamic Navigation Items from CMS Settings or defaults
+  const navItems = (settings?.headerNavItems && settings.headerNavItems.length > 0)
+    ? settings.headerNavItems
+    : DEFAULT_NAV_ITEMS;
+
+  const ctaText = settings?.headerCtaText || "درخواست مشاوره";
+  const ctaLink = settings?.headerCtaLink || "/contact";
 
   return (
     <header
@@ -65,24 +73,44 @@ export default function Header({ settings }: HeaderProps) {
                 {siteName}
               </span>
               <span className="text-[10px] text-gray-400 tracking-[0.15em] uppercase">
-                طراحی و ساخت پمپ‌های صنعتی
+                طراحی و ساخت تجهیزات و پمپ‌های صنعتی
               </span>
             </div>
           </Link>
 
           {/* Desktop Menu */}
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="relative px-3 py-2 text-sm text-gray-300 hover:text-white rounded-lg transition-all overflow-hidden group/nav"
-              >
-                <span className="absolute inset-0 bg-white/0 group-hover/nav:bg-white/5 rounded-lg transition-colors" />
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#c49a2c] group-hover/nav:w-3/4 transition-all duration-300 rounded-full" />
-                <span className="relative z-10">{item.label}</span>
-              </Link>
-            ))}
+            {navItems.map((item, idx) => {
+              const isExternal = Boolean(item.isExternal);
+              if (isExternal) {
+                return (
+                  <a
+                    key={item.href || idx}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative inline-flex items-center gap-1 px-3 py-2 text-sm text-gray-300 hover:text-white rounded-lg transition-all overflow-hidden group/nav"
+                  >
+                    <span className="absolute inset-0 bg-white/0 group-hover/nav:bg-white/5 rounded-lg transition-colors" />
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#c49a2c] group-hover/nav:w-3/4 transition-all duration-300 rounded-full" />
+                    <span className="relative z-10">{item.label}</span>
+                    <ArrowUpRight size={12} className="relative z-10 text-gray-400 group-hover/nav:text-[#c49a2c] transition-colors" />
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.href || idx}
+                  href={item.href}
+                  className="relative px-3 py-2 text-sm text-gray-300 hover:text-white rounded-lg transition-all overflow-hidden group/nav"
+                >
+                  <span className="absolute inset-0 bg-white/0 group-hover/nav:bg-white/5 rounded-lg transition-colors" />
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#c49a2c] group-hover/nav:w-3/4 transition-all duration-300 rounded-full" />
+                  <span className="relative z-10">{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -100,11 +128,11 @@ export default function Header({ settings }: HeaderProps) {
 
           {/* CTA Button */}
           <Link
-            href="/contact"
+            href={ctaLink}
             className="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-[#c49a2c] to-[#d4a82c] hover:from-[#d4a82c] hover:to-[#c49a2c] text-black px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-300 hover:shadow-xl hover:shadow-[#c49a2c]/20 hover:-translate-y-0.5 active:scale-95"
           >
             <Phone size={14} />
-            <span>درخواست مشاوره</span>
+            <span>{ctaText}</span>
           </Link>
 
           {/* Hamburger */}
@@ -118,30 +146,49 @@ export default function Header({ settings }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       {mobileOpen && (
         <div className="lg:hidden bg-[#0a1628]/98 backdrop-blur-md border-t border-white/5 px-4 py-3 space-y-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className="block py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg px-3 transition-all"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item, idx) => {
+            const isExternal = Boolean(item.isExternal);
+            if (isExternal) {
+              return (
+                <a
+                  key={item.href || idx}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg px-3 transition-all"
+                >
+                  <span>{item.label}</span>
+                  <ArrowUpRight size={14} className="text-gray-400" />
+                </a>
+              );
+            }
+
+            return (
+              <Link
+                key={item.href || idx}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="block py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg px-3 transition-all"
+              >
+                {item.label}
+              </Link>
+            );
+          })}
           <div className="flex items-center gap-2 pt-2 mt-2 border-t border-white/5 text-gray-400 text-sm">
             <Phone size={14} className="text-[#c49a2c]" />
             <span dir="ltr">{settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱"}</span>
           </div>
           <Link
-            href="/contact"
+            href={ctaLink}
             onClick={() => setMobileOpen(false)}
             className="mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#c49a2c] to-[#d4a82c] text-black py-3 rounded-xl font-bold text-sm"
           >
             <Phone size={16} />
-            درخواست مشاوره
+            {ctaText}
           </Link>
         </div>
       )}

@@ -516,6 +516,30 @@ export interface Setting {
   aboutText?: string | null;
   logo?: (string | null) | Media;
   logoDark?: (string | null) | Media;
+  headerNavItems?:
+    | {
+        label: string;
+        href: string;
+        isExternal?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  headerCtaText?: string | null;
+  headerCtaLink?: string | null;
+  footerQuickLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  footerProductLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
   certificates?:
     | {
         image: string | Media;
@@ -1067,6 +1091,30 @@ export interface SettingsSelect<T extends boolean = true> {
   aboutText?: T;
   logo?: T;
   logoDark?: T;
+  headerNavItems?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        isExternal?: T;
+        id?: T;
+      };
+  headerCtaText?: T;
+  headerCtaLink?: T;
+  footerQuickLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  footerProductLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
   certificates?:
     | T
     | {
@@ -1257,6 +1305,8 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
+
+
 
 
 export type Settings = Setting;

@@ -6,7 +6,7 @@ import type { Settings } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 import { COMPANY } from "@/lib/constants";
 
-const QUICK_LINKS = [
+const DEFAULT_QUICK_LINKS = [
   { href: "/products", label: "محصولات" },
   { href: "/capabilities", label: "توانمندی‌ها" },
   { href: "/projects", label: "پروژه‌ها" },
@@ -15,11 +15,12 @@ const QUICK_LINKS = [
   { href: "/contact", label: "تماس با ما" },
 ];
 
-const PRODUCT_LINKS = [
-  { href: "/products", label: "پمپ سانتریفیوژ" },
-  { href: "/products", label: "پمپ پیستونی" },
-  { href: "/products", label: "پمپ دنده‌ای" },
-  { href: "/products", label: "پمپ طبقاتی" },
+const DEFAULT_PRODUCT_LINKS = [
+  { href: "/products?category=generators", label: "دیزل ژنراتور و موتور دیزلی" },
+  { href: "/products?category=sludge-pumps", label: "پمپ لجن‌کش و خودمکش" },
+  { href: "/products?category=gear-pumps", label: "پمپ دنده‌ای پرتابل" },
+  { href: "/products?category=wet-blast", label: "سامانه وت‌بلاست" },
+  { href: "/products?category=machining", label: "خدمات ماشین‌کاری سنگین" },
 ];
 
 interface FooterProps {
@@ -33,9 +34,18 @@ export default function Footer({ settings }: FooterProps) {
   const email = settings?.email || COMPANY.email;
   const address = settings?.address || COMPANY.address;
 
+  // Dynamic quick links and product links from CMS Settings
+  const quickLinks = (settings?.footerQuickLinks && settings.footerQuickLinks.length > 0)
+    ? settings.footerQuickLinks
+    : DEFAULT_QUICK_LINKS;
+
+  const productLinks = (settings?.footerProductLinks && settings.footerProductLinks.length > 0)
+    ? settings.footerProductLinks
+    : DEFAULT_PRODUCT_LINKS;
+
   return (
     <footer className="relative bg-[#060f1c] text-white overflow-hidden" dir="rtl">
-      {/* Top accent */}
+      {/* Top accent line */}
       <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-l from-[#c49a2c] via-[#c49a2c]/60 to-transparent" />
 
       {/* Watermark logo */}
@@ -58,7 +68,7 @@ export default function Footer({ settings }: FooterProps) {
               {settings?.siteName || "هزاره کالا"}
             </h3>
             <p className="text-sm text-gray-400 text-justify leading-[1.8]">
-              طراحی و ساخت پمپ‌های صنعتی بزرگ. با بیش از هفت سال تجربه در خدمت صنایع نفت، گاز و پتروشیمی ایران.
+              {settings?.aboutText || "طراحی و ساخت تجهیزات مهندسی و پمپ‌های صنعتی بزرگ. با بیش از هفت سال تجربه در خدمت صنایع نفت، گاز، پتروشیمی و صنایع زیربنایی ایران."}
             </p>
           </div>
 
@@ -66,8 +76,8 @@ export default function Footer({ settings }: FooterProps) {
           <div>
             <h4 className="text-base font-bold text-gray-300 mb-4">دسترسی سریع</h4>
             <ul className="space-y-2">
-              {QUICK_LINKS.map((link) => (
-                <li key={link.label}>
+              {quickLinks.map((link, idx) => (
+                <li key={link.label || idx}>
                   <Link href={link.href} className="group flex items-center gap-2 text-sm text-gray-400 hover:text-[#c49a2c] transition-colors">
                     <ChevronLeft size={10} className="text-gray-600 group-hover:text-[#c49a2c] group-hover:-translate-x-1 transition-all" />
                     <span>{link.label}</span>
@@ -77,12 +87,12 @@ export default function Footer({ settings }: FooterProps) {
             </ul>
           </div>
 
-          {/* Products */}
+          {/* Products Links */}
           <div>
-            <h4 className="text-base font-bold text-gray-300 mb-4">محصولات</h4>
+            <h4 className="text-base font-bold text-gray-300 mb-4">محصولات و تجهیزات</h4>
             <ul className="space-y-2">
-              {PRODUCT_LINKS.map((link) => (
-                <li key={link.label}>
+              {productLinks.map((link, idx) => (
+                <li key={link.label || idx}>
                   <Link href={link.href} className="group flex items-center gap-2 text-sm text-gray-400 hover:text-[#c49a2c] transition-colors">
                     <ChevronLeft size={10} className="text-gray-600 group-hover:text-[#c49a2c] group-hover:-translate-x-1 transition-all" />
                     <span>{link.label}</span>
@@ -122,13 +132,13 @@ export default function Footer({ settings }: FooterProps) {
           </div>
         </div>
 
-        {/* Bottom bar - Clean, no certificates */}
+        {/* Bottom bar */}
         <div className="border-t border-white/[0.05] pt-5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} {settings?.siteName || "هزاره کالا دانش اروند"} — کلیه حقوق محفوظ است.
           </p>
           <p className="text-xs text-gray-600">
-            طراحی و ساخت پمپ‌های صنعتی بزرگ
+            طراحی و ساخت تجهیزات و پمپ‌های صنعتی سنگین
           </p>
         </div>
       </div>
