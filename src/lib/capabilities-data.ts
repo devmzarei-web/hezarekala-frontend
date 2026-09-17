@@ -23,6 +23,7 @@ export interface CapabilityDivision {
   id: string;
   number: number;
   title: string;
+  shortTitle: string;
   englishTitle: string;
   slug: string;
   badge: string;
@@ -44,6 +45,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-heat-exchangers",
     number: 1,
     title: "مبدل شاپ و تجهیزات فرآیندی",
+    shortTitle: "مبدل شاپ",
     englishTitle: "Heat Exchangers & Thermal Systems",
     slug: "heat-exchangers",
     badge: "پوسته و لوله / تیوب شیت",
@@ -101,6 +103,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-heavy-machining",
     number: 2,
     title: "ماشین‌کاری سنگین و تراشکاری CNC",
+    shortTitle: "ماشین‌کاری سنگین",
     englishTitle: "Heavy Machining & Precision CNC",
     slug: "heavy-machining",
     badge: "قطعه‌گیری تا ۲۰ تن",
@@ -192,6 +195,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-forming-fabrication",
     number: 3,
     title: "آهنگری، برش و فرم‌دهی فلزات",
+    shortTitle: "آهنگری و نورد",
     englishTitle: "Forging, Rolling & Sheet Metal Forming",
     slug: "forging-forming",
     badge: "نورد ورق تا ۶۰mm",
@@ -258,11 +262,12 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-pump-shop",
     number: 4,
     title: "پمپ شاپ صنعتی و پکیج‌های پرتابل",
+    shortTitle: "پمپ شاپ",
     englishTitle: "Industrial Pump Shop & Mobile Packages",
     slug: "pump-shop",
     badge: "تست هیدرولیک و هیدرواستاتیک",
     description:
-      "طراحی، ساخت و پکیجینگ انواع پمپ‌های خودمکش خودمکش (Self-Priming)، پمپ‌های دنده‌ای غلیظ‌کش، سامانه‌های لجن‌کش پرتابل، تعمیر، بازسازی و تست عملکردی انواع پمپ‌های صنایع نفت و گاز روی بنچ تست هیدرولیک کارخانه.",
+      "طراحی، ساخت و پکیجینگ انواع پمپ‌های خودمکش (Self-Priming)، پمپ‌های دنده‌ای غلیظ‌کش، سامانه‌های لجن‌کش پرتابل، تعمیر، بازسازی و تست عملکردی انواع پمپ‌های صنایع نفت و گاز روی بنچ تست هیدرولیک کارخانه.",
     iconName: "Droplets",
     stats: [
       { label: "دامنه دبی ساخت و تعمیر", value: "تا ۱۲۰۰ مترمکعب در ساعت" },
@@ -306,6 +311,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-valves-shop",
     number: 5,
     title: "شیرآلات صنعتی و ولو (Valve Shop)",
+    shortTitle: "شیرآلات صنعتی",
     englishTitle: "Valves Maintenance, Overhaul & API Testing",
     slug: "valves",
     badge: "آزمون طبق API 598",
@@ -354,6 +360,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-specialized-welding",
     number: 6,
     title: "جوشکاری و اتصال تخصصی",
+    shortTitle: "جوشکاری تخصصی",
     englishTitle: "Specialized Welding & Metallurgy",
     slug: "welding",
     badge: "جوش لیزر و TIG فرآیندی",
@@ -402,6 +409,7 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
     id: "div-surface-coating",
     number: 7,
     title: "آماده‌سازی سطح، وت‌بلاست و رنگ صنعتی",
+    shortTitle: "آماده‌سازی و رنگ",
     englishTitle: "Surface Preparation, Blasting & Industrial Coating",
     slug: "surface-coating",
     badge: "وت‌بلاست بدون غبار و اتاق رنگ",
@@ -463,19 +471,13 @@ export const CAPABILITY_DIVISIONS: CapabilityDivision[] = [
 ];
 
 /**
- * Factory Infrastructure & Credentials
+ * Factory Location & Verified Standards
  */
 export const FACTORY_INFRASTRUCTURE = {
   location: "استان خوزستان، منطقه آزاد اروند، شهرک صنعتی شماره یک آبادان",
-  landArea: "۴۰۰۰ متر مربع محوطه صنعتی و سالن‌های سرپوشیده تولید",
-  liftingCapacity: "جرثقیل سقفی ۲۰ تن در سالن اصلی ساخت و ماشین‌کاری سنگین",
-  powerBackup: "دیزل ژنراتور اضطراری ۴۰۰ کاوا جهت استمرار شبانه‌روزی خطوط تولید",
-  testingFacility: "ایستگاه مرکزی آزمون هیدرولیک و هیدرواستاتیک مجهز به گیج‌های معتبر",
   standards: [
     "ASME Sec VIII & IX",
     "API 610 & API 598",
     "TEMA Class R, C, B",
-    "ISO 9001:2015 Quality Management",
-    "ISO 45001:2018 HSE Management",
   ],
 };

@@ -47,19 +47,8 @@ export default function CapabilitiesBento({
     ? "text-white section-title-dark"
     : "text-[#0a1628] section-title-light";
   const subClass = isDark ? "text-gray-400" : "text-gray-500";
-  const cardBg = "bg-[#0d1f33] border-white/[0.04]";
-  const cardHover = "hover:border-[#c49a2c]/40 hover:bg-[#10243d]";
-
-  const getSizeClass = (size: string) => {
-    switch (size) {
-      case "large":
-        return "md:col-span-2 md:row-span-2";
-      case "tall":
-        return "md:row-span-2";
-      default:
-        return "";
-    }
-  };
+  const cardBg = "bg-[#0d1f33] border border-white/[0.06]";
+  const cardHover = "hover:border-[#c49a2c]/50 hover:bg-[#10243d] hover:shadow-2xl hover:shadow-[#0a1628]/40";
 
   return (
     <section
@@ -72,37 +61,43 @@ export default function CapabilitiesBento({
         </div>
       )}
 
-      <div className="relative z-10 w-full px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+      {/* ── 1920 Full Width Screen Container ── */}
+      <div className="relative z-10 w-full px-4 md:px-8 lg:px-16 xl:px-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-10 md:mb-14"
+          className="text-center mb-12 md:mb-16 max-w-4xl mx-auto"
         >
-          <span className="text-[#c49a2c] text-xs md:text-sm font-bold uppercase tracking-widest">
-            زیرساخت و تجهیزات کارخانه‌ای
+          <span className="text-[#c49a2c] text-xs md:text-sm font-bold uppercase tracking-widest bg-[#c49a2c]/10 border border-[#c49a2c]/20 px-3.5 py-1 rounded-full">
+            زیرساخت‌های مهندسی و ساخت کارخانه
           </span>
           <h2
             id="capabilities-heading"
-            className={`section-title text-2xl md:text-4xl lg:text-5xl mt-3 md:mt-4 mb-4 md:mb-6 font-extrabold ${titleClass}`}
+            className={`section-title text-2xl md:text-4xl lg:text-5xl mt-4 mb-4 font-extrabold ${titleClass}`}
           >
             {title}
           </h2>
           {subtitle && (
-            <p className={`max-w-3xl mx-auto text-sm md:text-base leading-relaxed ${subClass}`}>
+            <p className={`text-sm md:text-base lg:text-lg leading-relaxed ${subClass}`}>
               {subtitle}
             </p>
           )}
         </motion.div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        {/* ── Full Width Responsive Grid for 7 Industrial Divisions ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
           {items.map((item, index) => {
             const IconComponent = ICON_MAP[item.icon] || Settings;
-            const sizeClass = getSizeClass(item.size);
             const imageUrl = item.image ? getMediaUrl(item.image) : null;
+
+            // Give the first 2 or 3 cards a wider presence on large screens if appropriate
+            const isFeaturedCard = index === 0 || index === 1;
+            const colSpanClass = isFeaturedCard
+              ? "sm:col-span-2 lg:col-span-1 xl:col-span-2"
+              : "col-span-1";
 
             return (
               <motion.div
@@ -110,51 +105,48 @@ export default function CapabilitiesBento({
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.4 }}
-                className={`group ${sizeClass}`}
+                transition={{ delay: index * 0.08, duration: 0.4 }}
+                className={colSpanClass}
               >
                 <Link
                   href="/capabilities"
-                  className="block h-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#c49a2c]"
+                  className="block h-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#c49a2c] rounded-2xl group"
                 >
                   <div
-                    className={`relative h-full ${cardBg} rounded-2xl overflow-hidden transition-all duration-300 ${cardHover} shadow-lg ${
-                      imageUrl ? "p-0" : "p-5 md:p-8"
-                    } border border-transparent`}
+                    className={`relative h-full ${cardBg} rounded-2xl overflow-hidden transition-all duration-300 ${cardHover} ${
+                      imageUrl ? "p-0" : "p-6 md:p-8"
+                    } flex flex-col justify-between`}
                   >
                     {imageUrl && (
                       <>
                         <img
                           src={imageUrl}
                           alt={item.title}
-                          className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-500"
+                          className="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-500"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/60 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/75 to-transparent" />
                       </>
                     )}
 
-                    <div
-                      className={`relative z-10 ${
-                        imageUrl ? "p-5 md:p-8 flex flex-col justify-end h-full" : ""
-                      }`}
-                    >
-                      <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#c49a2c]/20 to-[#c49a2c]/5 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:from-[#c49a2c] group-hover:to-[#d4a82c] group-hover:scale-110 transition-all duration-500">
-                        <IconComponent className="w-5 h-5 md:w-7 md:h-7 text-[#c49a2c] group-hover:text-[#0a1628] transition-colors" />
+                    <div className={`relative z-10 ${imageUrl ? "p-6 md:p-8 flex flex-col justify-end h-full" : ""}`}>
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#c49a2c]/20 to-[#c49a2c]/5 rounded-xl flex items-center justify-center mb-4 group-hover:from-[#c49a2c] group-hover:to-[#d4a82c] group-hover:scale-110 transition-all duration-300 shadow-md">
+                        <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-[#c49a2c] group-hover:text-[#0a1628] transition-colors" />
                       </div>
-                      <h3 className="card-title text-base md:text-xl text-white font-bold mb-1.5 md:mb-2 group-hover:text-[#c49a2c] transition-colors">
+                      <h3 className="text-lg md:text-xl font-bold text-white mb-2 group-hover:text-[#c49a2c] transition-colors">
                         {item.title}
                       </h3>
-                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-4">
+                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-6">
                         {item.description}
                       </p>
-                      <div className="flex items-center text-xs font-semibold text-[#c49a2c] gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                        <span>مشاهده تجهیزات و مشخصات فنی</span>
-                        <ArrowLeft size={13} className="group-hover:-translate-x-1 transition-transform" />
-                      </div>
+                    </div>
+
+                    <div className="relative z-10 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-bold text-[#c49a2c]">
+                      <span>مشاهده تجهیزات و مشخصات فنی</span>
+                      <ArrowLeft size={14} className="group-hover:-translate-x-1.5 transition-transform" />
                     </div>
 
                     {/* Subtle border glow on hover */}
-                    <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-[#c49a2c]/30 transition-all duration-500 pointer-events-none" />
+                    <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-[#c49a2c]/40 transition-all duration-300 pointer-events-none" />
                   </div>
                 </Link>
               </motion.div>
@@ -162,15 +154,15 @@ export default function CapabilitiesBento({
           })}
         </div>
 
-        {/* Action Link to Full Capabilities */}
-        <div className="mt-10 md:mt-14 text-center">
+        {/* ── Full Width Bottom Action ── */}
+        <div className="mt-12 md:mt-16 text-center">
           <Link
             href="/capabilities"
-            className="inline-flex items-center gap-2 bg-[#0a1628] hover:bg-[#10243d] text-white font-bold text-sm px-8 py-4 rounded-xl transition-all duration-200 border border-[#c49a2c]/40 shadow-lg shadow-[#0a1628]/10 group"
+            className="inline-flex items-center gap-2.5 bg-[#0a1628] hover:bg-[#12223a] text-white font-bold text-sm md:text-base px-9 py-4 rounded-xl transition-all duration-200 border border-[#c49a2c]/50 shadow-xl shadow-[#0a1628]/20 group"
           >
             <span>مشاهده مشخصات فنی کامل ۷ واحد کارخانه و ماشین‌آلات</span>
             <ArrowLeft
-              size={16}
+              size={18}
               className="text-[#c49a2c] group-hover:-translate-x-1.5 transition-transform"
             />
           </Link>

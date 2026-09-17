@@ -208,6 +208,8 @@ export interface Media {
   };
 }
 /**
+ * مدیریت کاتالوگ محصولات صنعتی، دیزل ژنراتورها، پمپ‌ها و تجهیزات
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
@@ -355,6 +357,20 @@ export interface Page {
    */
   heroVideo?: (string | null) | Media;
   /**
+   * متن‌ها، تیتر سه سطری و دکمه‌های نمایش داده شده روی ویدیو
+   */
+  heroVideoContent?: {
+    badge?: string | null;
+    titleLine1?: string | null;
+    titleHighlight?: string | null;
+    titleLine3?: string | null;
+    description?: string | null;
+    primaryCtaText?: string | null;
+    primaryCtaLink?: string | null;
+    secondaryCtaText?: string | null;
+    secondaryCtaLink?: string | null;
+  };
+  /**
    * فقط برای صفحه home کاربرد دارد
    */
   heroSlides?:
@@ -362,6 +378,15 @@ export interface Page {
         image: string | Media;
         video?: (string | null) | Media;
         title?: string | null;
+        badge?: string | null;
+        titleLine1?: string | null;
+        titleHighlight?: string | null;
+        titleLine3?: string | null;
+        description?: string | null;
+        primaryCtaText?: string | null;
+        primaryCtaLink?: string | null;
+        secondaryCtaText?: string | null;
+        secondaryCtaLink?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -916,12 +941,34 @@ export interface PagesSelect<T extends boolean = true> {
   subtitle?: T;
   heroImage?: T;
   heroVideo?: T;
+  heroVideoContent?:
+    | T
+    | {
+        badge?: T;
+        titleLine1?: T;
+        titleHighlight?: T;
+        titleLine3?: T;
+        description?: T;
+        primaryCtaText?: T;
+        primaryCtaLink?: T;
+        secondaryCtaText?: T;
+        secondaryCtaLink?: T;
+      };
   heroSlides?:
     | T
     | {
         image?: T;
         video?: T;
         title?: T;
+        badge?: T;
+        titleLine1?: T;
+        titleHighlight?: T;
+        titleLine3?: T;
+        description?: T;
+        primaryCtaText?: T;
+        primaryCtaLink?: T;
+        secondaryCtaText?: T;
+        secondaryCtaLink?: T;
         id?: T;
       };
   content?: T;
@@ -1210,6 +1257,7 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 export type Settings = Setting;
 

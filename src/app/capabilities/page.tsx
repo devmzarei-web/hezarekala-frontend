@@ -20,8 +20,6 @@ import {
   Anchor,
   Activity,
   ArrowLeft,
-  ShieldCheck,
-  Zap,
 } from "lucide-react";
 
 export const revalidate = 60;
@@ -118,19 +116,19 @@ export default async function CapabilitiesPage() {
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "توانمندی‌ها" }]}
         />
 
-        {/* ── Engineering Pillars Section ── */}
+        {/* ── Engineering Pillars Section (1920 Full Width) ── */}
         <section className="py-16 bg-white border-b border-gray-100">
-          <div className="w-full px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20">
+            <div className="text-center max-w-3xl mx-auto mb-12">
               <span className="text-xs font-bold text-[#c49a2c] bg-[#c49a2c]/10 px-3 py-1 rounded-full border border-[#c49a2c]/20">
                 رویکرد مهندسی یکپارچه
               </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#0a1628] mt-3">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#0a1628] mt-3">
                 چرخه کامل از تحلیل فنی تا تحویل در کارخانه آبادان
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
               {ENGINEERING_PILLARS.map((pillar, i) => {
                 const Icon = pillar.icon;
                 return (
@@ -142,7 +140,7 @@ export default async function CapabilitiesPage() {
                       <div className="w-12 h-12 rounded-xl bg-[#c49a2c] text-[#0a1628] flex items-center justify-center mb-6 shadow-md shadow-[#c49a2c]/20">
                         <Icon size={24} />
                       </div>
-                      <h3 className="text-lg font-bold text-[#0a1628] mb-3">{pillar.title}</h3>
+                      <h3 className="text-lg md:text-xl font-bold text-[#0a1628] mb-3">{pillar.title}</h3>
                       <p className="text-gray-600 text-sm leading-relaxed">{pillar.desc}</p>
                     </div>
                     <div className="mt-6 pt-4 border-t border-gray-200/60 flex items-center text-xs font-semibold text-[#c49a2c] gap-1">
@@ -156,26 +154,26 @@ export default async function CapabilitiesPage() {
           </div>
         </section>
 
-        {/* ── Dynamic 7-Divisions Capabilities Explorer ── */}
+        {/* ── Dynamic 7-Divisions Capabilities Explorer (1920 Full Width) ── */}
         <CapabilitiesExplorer />
 
         {/* ── CMS RichText Content (If Authored in Payload CMS) ── */}
         {page?.content && (
           <section className="py-16 bg-white border-b border-gray-100">
-            <div className="w-full px-4 md:px-8 lg:px-12 max-w-5xl mx-auto">
+            <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 max-w-6xl mx-auto">
               <RichTextRenderer content={page.content} />
             </div>
           </section>
         )}
 
-        {/* ── Industrial Applications Matrix ── */}
+        {/* ── Industrial Applications Matrix (1920 Full Width) ── */}
         <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
-          <div className="w-full px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20">
+            <div className="text-center max-w-3xl mx-auto mb-12">
               <span className="text-xs font-bold text-[#c49a2c] bg-[#c49a2c]/10 px-3 py-1 rounded-full border border-[#c49a2c]/20">
                 گستره کاربردها و مشتریان
               </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#0a1628] mt-3">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#0a1628] mt-3">
                 صنایع هدف و حوزه‌های اصلی همکاری
               </h2>
             </div>
@@ -192,8 +190,8 @@ export default async function CapabilitiesPage() {
                       <div className="w-10 h-10 rounded-lg bg-[#0a1628] text-[#c49a2c] flex items-center justify-center mb-4">
                         <Icon size={20} />
                       </div>
-                      <h3 className="font-bold text-base text-[#0a1628] mb-2">{sec.title}</h3>
-                      <p className="text-gray-600 text-xs leading-relaxed">{sec.desc}</p>
+                      <h3 className="font-bold text-base md:text-lg text-[#0a1628] mb-2">{sec.title}</h3>
+                      <p className="text-gray-600 text-xs md:text-sm leading-relaxed">{sec.desc}</p>
                     </div>
                   </div>
                 );
@@ -203,12 +201,12 @@ export default async function CapabilitiesPage() {
         </section>
 
         {/* ── Call To Action Banner ── */}
-        <section className="py-16 bg-gradient-to-r from-[#0a1628] via-[#0f2038] to-[#0a1628] text-white">
-          <div className="w-full px-4 md:px-8 lg:px-12 text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c49a2c]/20 border border-[#c49a2c]/30 text-[#c49a2c] text-xs font-bold mb-4">
+        <section className="py-16 md:py-20 bg-gradient-to-r from-[#0a1628] via-[#0f2038] to-[#0a1628] text-white">
+          <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#c49a2c]/20 border border-[#c49a2c]/30 text-[#c49a2c] text-xs font-bold mb-4">
               <span>مشاوره و استعلام فنی مستقیم</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold mb-4">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4">
               نیاز به ساخت قطعات سنگین، تعمیر پمپ یا اورهال تجهیزات دارید؟
             </h2>
             <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-8">

@@ -45,6 +45,15 @@ export default async function Home() {
     image: slide.image ? getMediaUrl(slide.image) : "",
     video: slide.video ? getMediaUrl(slide.video) : null,
     title: slide.title || "",
+    badge: slide.badge || null,
+    titleLine1: slide.titleLine1 || null,
+    titleHighlight: slide.titleHighlight || null,
+    titleLine3: slide.titleLine3 || null,
+    description: slide.description || null,
+    primaryCtaText: slide.primaryCtaText || null,
+    primaryCtaLink: slide.primaryCtaLink || null,
+    secondaryCtaText: slide.secondaryCtaText || null,
+    secondaryCtaLink: slide.secondaryCtaLink || null,
   })) ?? [];
 
   let heroVideoUrl: string | null = null;
@@ -56,8 +65,23 @@ export default async function Home() {
     }
   }
 
+  const heroVideoData = heroVideoUrl
+    ? {
+        videoUrl: heroVideoUrl,
+        badge: homePage?.heroVideoContent?.badge || null,
+        titleLine1: homePage?.heroVideoContent?.titleLine1 || null,
+        titleHighlight: homePage?.heroVideoContent?.titleHighlight || null,
+        titleLine3: homePage?.heroVideoContent?.titleLine3 || null,
+        description: homePage?.heroVideoContent?.description || null,
+        primaryCtaText: homePage?.heroVideoContent?.primaryCtaText || null,
+        primaryCtaLink: homePage?.heroVideoContent?.primaryCtaLink || null,
+        secondaryCtaText: homePage?.heroVideoContent?.secondaryCtaText || null,
+        secondaryCtaLink: homePage?.heroVideoContent?.secondaryCtaLink || null,
+      }
+    : null;
+
   const sectionsMap = new Map<string, HomeSection>();
-  homeSections.forEach(s => sectionsMap.set(s.sectionKey, s));
+  homeSections.forEach((s: HomeSection) => sectionsMap.set(s.sectionKey, s));
 
   const whyUs = sectionsMap.get("why-us");
   const capabilities = sectionsMap.get("capabilities");
@@ -73,7 +97,7 @@ export default async function Home() {
         <Header settings={settings} />
         
         {/* 1. Hero - Dark */}
-        <Hero slides={heroSlides} heroVideoUrl={heroVideoUrl} settings={settings} />
+        <Hero slides={heroSlides} heroVideoUrl={heroVideoUrl} heroVideo={heroVideoData} settings={settings} />
 
         {/* 2. Why Us - Light (White) */}
         {whyUs?.whyUsCards?.length ? <WhyUs title={whyUs.title} subtitle={whyUs.subtitle || undefined} theme="light" backgroundImage={bg(whyUs)} cards={whyUs.whyUsCards as any} /> : null}
