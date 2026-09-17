@@ -204,6 +204,10 @@ export async function getHomePage(): Promise<Page | null> {
   return getPage("home");
 }
 
+export async function getCapabilitiesPage(): Promise<Page | null> {
+  return getPage("capabilities");
+}
+
 /* ── Projects ── */
 export async function getFeaturedProjects(): Promise<ProjectItem[]> {
   const data = await fetchAPI<{ docs: ProjectItem[] }>(

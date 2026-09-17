@@ -7,7 +7,7 @@ import Footer from "@/components/layout/Footer";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
-import MachineShopExplorer from "@/components/sections/MachineShopExplorer";
+import CapabilitiesExplorer from "@/components/sections/CapabilitiesExplorer";
 import Link from "next/link";
 import {
   Layers,
@@ -20,6 +20,8 @@ import {
   Anchor,
   Activity,
   ArrowLeft,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 
 export const revalidate = 60;
@@ -28,17 +30,20 @@ export const revalidate = 60;
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("capabilities");
   return {
-    title: page?.metaTitle || page?.title || "توانمندی‌ها و ماشین‌شاپ",
+    title: page?.metaTitle || page?.title || "توانمندی‌های مهندسی و ماشین‌شاپ صنعتی | هزاره کالا دانش اروند",
     description:
       page?.metaDescription ||
       page?.excerpt ||
-      "توانمندی‌های مهندسی، ماشین‌کاری سنگین CNC، نورد ورق تا ۶۰ میلی‌متر، جوشکاری و تست هیدرواستاتیک شرکت هزاره کالا دانش اروند در شهرک صنعتی آبادان.",
+      "مرکز ماشین‌کاری سنگین ۲۰ تن، نورد ورق تا ۶۰ میلی‌متر، ساخت مبدل حرارتی، پمپ شاپ، تعمیر و اورهال ولو، جوشکاری تخصصی و وت‌بلاست در کارخانه آبادان شرکت هزاره کالا دانش اروند.",
     alternates: {
       canonical: `${SITE_URL}/capabilities`,
     },
     openGraph: {
-      title: page?.metaTitle || page?.title || "توانمندی‌های هزاره کالا دانش اروند",
-      description: page?.metaDescription || page?.excerpt || "",
+      title: page?.metaTitle || page?.title || "توانمندی‌های مهندسی کارخانه هزاره کالا دانش اروند",
+      description:
+        page?.metaDescription ||
+        page?.excerpt ||
+        "مرکز تخصصی ماشین‌کاری فوق‌سنگین، ساخت مبدل، پمپ و اورهال ولو در منطقه آزاد اروند.",
       images: page?.heroImage ? [{ url: getMediaUrl(page.heroImage) }] : [],
     },
   };
@@ -48,18 +53,18 @@ export async function generateMetadata(): Promise<Metadata> {
 const ENGINEERING_PILLARS = [
   {
     icon: Layers,
-    title: "طراحی و شبیه‌سازی پیشرفته (CAD/CAM & CFD)",
-    desc: "طراحی سه‌بعدی هیدرولیکی و مکانیکی، تحلیل تنش اجزای محدود (FEA) و شبیه‌سازی دینامیک سیالات محاسباتی جهت دستیابی به بالاترین راندمان و جلوگیری از کاویتاسیون.",
+    title: "طراحی، شبیه‌سازی و مهندسی معکوس",
+    desc: "طراحی سه‌بعدی هیدرولیکی، تحلیل تنش اجزای محدود (FEA)، شبیه‌سازی CFD و تدوین مستندات ساخت و WPS طبق استانداردهای بین‌المللی ASME و API.",
   },
   {
     icon: Wrench,
-    title: "ساخت و ماشین‌کاری فوق‌سنگین در محل کارخانه",
-    desc: "ماشین‌کاری پوسته‌ها و شفت‌ها با تراش ۶ متری، فرز CNC سه متری KF3000 اسپانیا، وایرکات و سوراخ‌کاری رادیال ۴ متری بدون نیاز به برون‌سپاری.",
+    title: "ساخت و ماشین‌کاری فوق‌سنگین در کارخانه",
+    desc: "عملیات ماشین‌کاری با تراش ۶ متری تا ۲۰ تن، فرز دروازه‌ای CNC اسپانیا، نورد ۴ غلطکه تا ضخامت ۶۰ میلی‌متر و برش لیزر ۶kW متمرکز در کارخانه آبادان.",
   },
   {
     icon: Activity,
-    title: "آزمون‌های عملکردی و تست هیدرواستاتیک",
-    desc: "تست فشار بدنه، اندازه‌گیری دبی و هد، کنترل ارتعاش، آزمون خودمکش و استخراج منحنی عملکرد اختصاصی طبق استانداردهای بین‌المللی API و ISO.",
+    title: "تست‌های عملکردی و آزمون هیدرواستاتیک",
+    desc: "بنچ تست هیدرولیک اندازه‌گیری دبی و هد، استخراج منحنی Q-H، تست هیدرواستاتیک شل و تیوب مبدل‌ها و آزمون نشتی شیرآلات طبق API 598.",
   },
 ];
 
@@ -67,23 +72,23 @@ const ENGINEERING_PILLARS = [
 const INDUSTRIAL_SECTORS = [
   {
     icon: Flame,
-    title: "نفت، گاز و پتروشیمی",
-    desc: "انتقال نفت خام، فرآورده‌های نفتی سنگین، سوخت، لجن هیدروکربنی و جابه‌جایی سیالات بین مخازن و تانک‌فارم‌ها.",
+    title: "پالایشگاه‌ها، گاز و پتروشیمی",
+    desc: "ساخت و تعمیر مبدل‌های حرارتی فرآیندی، پمپ‌های اسلاری و هیدروکربنی سنگین، بازسازی و تست دوره‌ای ولوهای فرآیندی.",
   },
   {
     icon: Droplets,
-    title: "مدیریت بحران و مهار آلودگی",
-    desc: "جمع‌آوری سریع آلودگی‌های نفتی، تخلیه حوضچه‌های آلوده، مهار نشت و امداد اضطراری در نقاط فاقد زیرساخت برق.",
+    title: "مدیریت بحران و مهار آلودگی‌های نفتی",
+    desc: "سامانه‌های پمپاژ خودمکش سیلاب و پساب‌های حاوی جامدات تا ۱۰۰ میلی‌متر، پکیج‌های پرتابل لجن‌کش و ایستگاه‌های تخلیه سریع.",
   },
   {
     icon: Anchor,
-    title: "صنایع دریایی و ساحلی",
-    desc: "آب‌کشی مخازن بارج‌ها و شناورها، وت‌بلاست و زنگ‌زدایی اسکله‌ها و سازه‌های دریایی بدون ایجاد غبار معلق.",
+    title: "صنایع دریایی، کشتی‌سازی و بنادر",
+    desc: "تراش شفت‌های عظیم پروانه و پروانه‌دار، آماده‌سازی سطح با وت‌بلاست بدون غبار در اسکله و پوشش‌های ضدخوردگی سه‌لایه دریایی.",
   },
   {
     icon: Building2,
-    title: "آب، فاضلاب و پروژه‌های عمرانی",
-    desc: "آبگیری گودها، کانال‌ها، انتقال پساب‌های حاوی شن، ماسه، لجن و جامدات تا قطر ۱۰۰ میلی‌متر با پمپ‌های خودمکش.",
+    title: "صنایع فولاد، سیمان و نیروگاهی",
+    desc: "تعمیرات اساسی قطعات سنگین خطوط نورد، ماشین‌کاری هوزینگ‌های حجیم، تأمین دیزل ژنراتورهای صنعتی و پمپ‌های تغذیه دیگ بخار.",
   },
 ];
 
@@ -95,7 +100,7 @@ export default async function CapabilitiesPage() {
       <BreadcrumbSchema
         items={[
           { name: "خانه", url: SITE_URL },
-          { name: page?.title || "توانمندی‌ها", url: `${SITE_URL}/capabilities` },
+          { name: page?.title || "توانمندی‌ها و ماشین‌شاپ", url: `${SITE_URL}/capabilities` },
         ]}
       />
 
@@ -103,11 +108,11 @@ export default async function CapabilitiesPage() {
         <Header settings={settings} />
 
         <PageHero
-          title={page?.title || "توانمندی‌ها و تجهیزات کارخانه"}
-          subtitle={page?.subtitle || "از مهندسی و شبیه‌سازی تا ساخت و تست عملیاتی"}
+          title={page?.title || "توانمندی‌های ساخت و ماشین‌شاپ صنعتی"}
+          subtitle={page?.subtitle || "از مهندسی دقیق و شبیه‌سازی تا ساخت قطعات فوق‌سنگین و تست نهایی"}
           excerpt={
             page?.excerpt ||
-            "هزاره کالا دانش اروند، مجتمع مهندسی و ساخت تجهیزات صنعتی در آبادان با ۲۱ دستگاه سنگین ماشین‌کاری، برش لیزر، نورد ۶۰ میلی‌متر و ایستگاه آزمون هیدرواستاتیک پمپ‌های صنعتی."
+            "مجتمع صنعتی هزاره کالا دانش اروند در شهرک صنعتی شماره یک آبادان؛ مجهز به ۷ واحد تخصصی شامل ماشین‌کاری سنگین تا ۲۰ تن، نورد ورق تا ۶۰ میلی‌متر، مبدل شاپ، پمپ شاپ، تست ولو API و وت‌بلاست بدون غبار."
           }
           image={page?.heroImage}
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "توانمندی‌ها" }]}
@@ -115,13 +120,13 @@ export default async function CapabilitiesPage() {
 
         {/* ── Engineering Pillars Section ── */}
         <section className="py-16 bg-white border-b border-gray-100">
-          <div className="w-full px-4 md:px-8 lg:px-12">
+          <div className="w-full px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <span className="text-xs font-bold text-[#c49a2c] bg-[#c49a2c]/10 px-3 py-1 rounded-full border border-[#c49a2c]/20">
                 رویکرد مهندسی یکپارچه
               </span>
               <h2 className="text-2xl md:text-3xl font-extrabold text-[#0a1628] mt-3">
-                چرخه کامل طراحی تا تحویل در کارخانه آبادان
+                چرخه کامل از تحلیل فنی تا تحویل در کارخانه آبادان
               </h2>
             </div>
 
@@ -134,7 +139,7 @@ export default async function CapabilitiesPage() {
                     className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:border-[#c49a2c]/40 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="w-12 h-12 rounded-xl bg-[#c49a2c] text-black flex items-center justify-center mb-6 shadow-md shadow-[#c49a2c]/20">
+                      <div className="w-12 h-12 rounded-xl bg-[#c49a2c] text-[#0a1628] flex items-center justify-center mb-6 shadow-md shadow-[#c49a2c]/20">
                         <Icon size={24} />
                       </div>
                       <h3 className="text-lg font-bold text-[#0a1628] mb-3">{pillar.title}</h3>
@@ -142,7 +147,7 @@ export default async function CapabilitiesPage() {
                     </div>
                     <div className="mt-6 pt-4 border-t border-gray-200/60 flex items-center text-xs font-semibold text-[#c49a2c] gap-1">
                       <CheckCircle2 size={14} />
-                      <span>استانداردسازی و نظارت کامل کیفی</span>
+                      <span>انطباق با کدهای ASME, API, TEMA</span>
                     </div>
                   </div>
                 );
@@ -151,12 +156,12 @@ export default async function CapabilitiesPage() {
           </div>
         </section>
 
-        {/* ── Dynamic Machine Shop Explorer (21 Machines & Workshop Facilities) ── */}
-        <MachineShopExplorer />
+        {/* ── Dynamic 7-Divisions Capabilities Explorer ── */}
+        <CapabilitiesExplorer />
 
         {/* ── CMS RichText Content (If Authored in Payload CMS) ── */}
         {page?.content && (
-          <section className="py-16 bg-white">
+          <section className="py-16 bg-white border-b border-gray-100">
             <div className="w-full px-4 md:px-8 lg:px-12 max-w-5xl mx-auto">
               <RichTextRenderer content={page.content} />
             </div>
@@ -165,13 +170,13 @@ export default async function CapabilitiesPage() {
 
         {/* ── Industrial Applications Matrix ── */}
         <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
-          <div className="w-full px-4 md:px-8 lg:px-12">
+          <div className="w-full px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <span className="text-xs font-bold text-[#c49a2c] bg-[#c49a2c]/10 px-3 py-1 rounded-full border border-[#c49a2c]/20">
-                گستره کاربردها
+                گستره کاربردها و مشتریان
               </span>
               <h2 className="text-2xl md:text-3xl font-extrabold text-[#0a1628] mt-3">
-                صنایع هدف و حوزه‌های عملیاتی
+                صنایع هدف و حوزه‌های اصلی همکاری
               </h2>
             </div>
 
@@ -200,25 +205,28 @@ export default async function CapabilitiesPage() {
         {/* ── Call To Action Banner ── */}
         <section className="py-16 bg-gradient-to-r from-[#0a1628] via-[#0f2038] to-[#0a1628] text-white">
           <div className="w-full px-4 md:px-8 lg:px-12 text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c49a2c]/20 border border-[#c49a2c]/30 text-[#c49a2c] text-xs font-bold mb-4">
+              <span>مشاوره و استعلام فنی مستقیم</span>
+            </div>
             <h2 className="text-2xl md:text-3xl font-extrabold mb-4">
-              نیاز به ساخت سفارشی پمپ یا خدمات ماشین‌کاری سنگین دارید؟
+              نیاز به ساخت قطعات سنگین، تعمیر پمپ یا اورهال تجهیزات دارید؟
             </h2>
             <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-8">
-              مهندسان شرکت هزاره کالا دانش اروند آماده بررسی نقشه‌های فنی، تحلیل شرایط کاری سیال و طراحی اختصاصی پکیج‌های پمپاژ متناسب با نیاز پروژه شما هستند.
+              تیم مهندسی شرکت هزاره کالا دانش اروند در شهرک صنعتی آبادان آماده بررسی نقشه‌های فنی، شرایط کاری سیالات و ارائه طرح‌های بهینه ساخت و بازسازی تجهیزات شما می‌باشد.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/contact"
-                className="bg-[#c49a2c] hover:bg-[#b08824] text-black font-bold px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-[#c49a2c]/20 flex items-center gap-2"
+                className="bg-[#c49a2c] hover:bg-[#b08824] text-[#0a1628] font-bold px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-[#c49a2c]/20 flex items-center gap-2"
               >
                 <Phone size={18} />
-                <span>درخواست مشاوره فنی و استعلام</span>
+                <span>درخواست مشاوره و ثبت سفارش</span>
               </Link>
               <Link
-                href="/compare"
+                href="/products"
                 className="bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3.5 rounded-xl transition-colors border border-white/20 flex items-center gap-2"
               >
-                <span>مقایسه مشخصات پمپ‌ها</span>
+                <span>مشاهده محصولات و تجهیزات کاتالوگ</span>
                 <ArrowLeft size={16} />
               </Link>
             </div>
