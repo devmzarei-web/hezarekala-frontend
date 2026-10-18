@@ -132,7 +132,7 @@ export default function CertificatesMarquee({ certificates }: CertificatesMarque
                       {cert.title}
                     </h3>
                     <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400">
-                      <span className="truncate max-w-[170px]">{cert.issuingAuthority || "QAL UK"}</span>
+                      <span className="truncate max-w-[170px]">{cert.issuingAuthority || "Quay Audit Limited (QAL)"}</span>
                       <span className="flex items-center gap-0.5 text-[#c49a2c] font-medium group-hover:translate-x-1 transition-transform">
                         <span>جزییات</span>
                         <ChevronLeft className="w-3 h-3" />

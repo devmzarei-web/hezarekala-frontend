@@ -74,8 +74,8 @@ export default function CertificatesGrid({ certificates }: CertificatesGridProps
                     </span>
                   </div>
 
-                  {/* Document Preview Thumbnail */}
-                  <div className="relative aspect-[4/3] sm:aspect-[16/11] bg-white mx-5 mt-4 rounded-xl overflow-hidden border border-white/15 flex items-center justify-center p-3 shadow-inner group-hover:border-[#c49a2c]/40 transition-colors">
+                  {/* Document Preview Thumbnail (A4 Portrait 3:4 Framing) */}
+                  <div className="relative aspect-[3/4] max-h-[400px] bg-white mx-5 mt-4 rounded-xl overflow-hidden border border-white/15 flex items-center justify-center p-2.5 shadow-inner group-hover:border-[#c49a2c]/40 transition-colors">
                     <img
                       src={imageUrl}
                       alt={cert.title}
