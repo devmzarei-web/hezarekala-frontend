@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSettings, getFeaturedProducts, getHomePage, getFeaturedProjects, getHomeSections } from "@/lib/payload";
+import { getSettings, getFeaturedProducts, getHomePage, getFeaturedProjects, getHomeSections, getCertificates } from "@/lib/payload";
 import { SITE_URL, CMS_URL } from "@/lib/env";
 import type { Page, HomeSection } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
@@ -10,6 +10,7 @@ import ProductCards3D from "@/components/sections/ProductCards3D";
 import CapabilitiesBento from "@/components/sections/CapabilitiesBento";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
+import CertificatesMarquee from "@/components/sections/CertificatesMarquee";
 import CTABanner from "@/components/sections/CTABanner";
 import Footer from "@/components/layout/Footer";
 import OrganizationSchema from "@/components/ui/OrganizationSchema";
@@ -37,8 +38,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [settings, products, homePage, projects, homeSections] = await Promise.all([
-    getSettings(), getFeaturedProducts(), getHomePage(), getFeaturedProjects(), getHomeSections(),
+  const [settings, products, homePage, projects, homeSections, certificates] = await Promise.all([
+    getSettings(),
+    getFeaturedProducts(),
+    getHomePage(),
+    getFeaturedProjects(),
+    getHomeSections(),
+    getCertificates(true),
   ]);
 
   const heroSlides = homePage?.heroSlides?.map((slide: NonNullable<Page["heroSlides"]>[number]) => ({
@@ -111,13 +117,16 @@ export default async function Home() {
         {/* 5. Process - Dark */}
         {process?.processSteps?.length ? <Process title={process.title} subtitle={process.subtitle || undefined} theme="dark" backgroundImage={bg(process)} steps={process.processSteps as any} /> : null}
 
-        {/* 6. Projects - Light (White) */}
-        <Projects projects={projects || []} />
+        {/* 6. Projects - Light (White) - Collapses completely when 0 projects are featured */}
+        {projects?.length ? <Projects projects={projects} /> : null}
 
-        {/* 7. CTA - Gold */}
+        {/* 7. Certificates Continuous Marquee - Dark Steel Plaque */}
+        {certificates?.length ? <CertificatesMarquee certificates={certificates} /> : null}
+
+        {/* 8. CTA - Gold */}
         <CTABanner settings={settings} />
 
-        {/* 8. Footer - Dark */}
+        {/* 9. Footer - Dark */}
         <Footer settings={settings} />
       </main>
     </>

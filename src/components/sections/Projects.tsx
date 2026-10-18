@@ -15,6 +15,10 @@ interface ProjectsProps {
 }
 
 export default function Projects({ projects }: ProjectsProps) {
+  if (!projects || projects.length === 0) {
+    return null;
+  }
+
   return (
     <section className="relative py-16 md:py-24 bg-white overflow-hidden" aria-labelledby="projects-heading">
       <div className="relative z-10 w-full px-4 md:px-8 lg:px-16">

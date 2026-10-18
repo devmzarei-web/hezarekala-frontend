@@ -1,4 +1,4 @@
-import type { Settings, Product, ProductCategory, Page, HomeSection } from "@/payload-types";
+import type { Settings, Product, ProductCategory, Page, HomeSection, Certificate } from "@/payload-types";
 import { PAYLOAD_API_URL } from "@/lib/env";
 import { DEFAULT_PRODUCTS } from "@/lib/constants";
 
@@ -238,6 +238,16 @@ export async function getHomeSections(): Promise<HomeSection[]> {
   const data = await fetchAPI<{ docs: HomeSection[] }>(
     "/home-sections?where[isActive][equals]=true&sort=order&limit=10"
   );
+
+  return data?.docs ?? [];
+}
+
+/* ── Certificates ── */
+export async function getCertificates(onlyFeaturedHome = false): Promise<Certificate[]> {
+  const query = onlyFeaturedHome
+    ? "/certificates?where[isActive][equals]=true&where[isFeaturedHome][equals]=true&sort=order&limit=50&depth=2"
+    : "/certificates?where[isActive][equals]=true&sort=order&limit=50&depth=2";
+  const data = await fetchAPI<{ docs: Certificate[] }>(query);
 
   return data?.docs ?? [];
 }

@@ -79,6 +79,7 @@ export interface Config {
     gallery: Gallery;
     team: Team;
     'home-sections': HomeSection;
+    certificates: Certificate;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -98,6 +99,7 @@ export interface Config {
     gallery: GallerySelect<false> | GallerySelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     'home-sections': HomeSectionsSelect<false> | HomeSectionsSelect<true>;
+    certificates: CertificatesSelect<false> | CertificatesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -710,6 +712,26 @@ export interface HomeSection {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates".
+ */
+export interface Certificate {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  standard: string;
+  issuingAuthority?: string | null;
+  registrationNumber: string;
+  issueDate?: string | null;
+  description?: string | null;
+  image: string | Media;
+  order?: number | null;
+  isActive?: boolean | null;
+  isFeaturedHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -779,6 +801,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'home-sections';
         value: string | HomeSection;
+      } | null)
+    | ({
+        relationTo: 'certificates';
+        value: string | Certificate;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1250,6 +1276,25 @@ export interface HomeSectionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates_select".
+ */
+export interface CertificatesSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  standard?: T;
+  issuingAuthority?: T;
+  registrationNumber?: T;
+  issueDate?: T;
+  description?: T;
+  image?: T;
+  order?: T;
+  isActive?: T;
+  isFeaturedHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1305,6 +1350,7 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 
 

@@ -24,7 +24,7 @@ import {
   HeartHandshake,
   Layers,
 } from "lucide-react";
-import { getSettings, getPage, getTeamMembers } from "@/lib/payload";
+import { getSettings, getPage, getTeamMembers, getCertificates } from "@/lib/payload";
 import { SITE_URL, PAYLOAD_API_URL } from "@/lib/env";
 import { getMediaUrl } from "@/lib/media";
 import { COMPANY } from "@/lib/constants";
@@ -35,6 +35,7 @@ import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import WorkstationsExplorer, { type WorkstationData } from "@/components/sections/WorkstationsExplorer";
 import IndustrialDivider from "@/components/ui/IndustrialDivider";
+import CertificatesGrid from "@/components/sections/CertificatesGrid";
 
 export const revalidate = 60;
 
@@ -180,14 +181,13 @@ const DEFAULT_COMPANY_GROUNDS = [
 ];
 
 export default async function AboutPage() {
-  const [settings, page, teamMembers, workshopImages] = await Promise.all([
+  const [settings, page, teamMembers, workshopImages, officialCertificates] = await Promise.all([
     getSettings(),
     getPage("about"),
     getTeamMembers(),
     getWorkshopImages(),
+    getCertificates(),
   ]);
-
-  const certificates = settings?.certificates || [];
 
   // Resolve dynamic or fallback fields
   const displayStats =
@@ -458,7 +458,21 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        {/* 5. Interactive Workstations & Facility Showcase */}
+        {/* Industrial Chapter Divider */}
+        <div className="w-full px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto my-6">
+          <IndustrialDivider
+            variant="accent"
+            coordinates="30°20'N 48°17'E"
+            plantLabel="ACCREDITED INDUSTRIAL STANDARDS & QUALITY MANAGEMENT"
+          />
+        </div>
+
+        {/* 5. Company Official Certificates & Standards Grid */}
+        {officialCertificates?.length > 0 && (
+          <CertificatesGrid certificates={officialCertificates} />
+        )}
+
+        {/* 6. Interactive Workstations & Facility Showcase */}
         <WorkstationsExplorer workstations={displayWorkstations} />
 
         {/* 6. Company Grounds & Facility Gallery */}
@@ -616,48 +630,7 @@ export default async function AboutPage() {
           </section>
         )}
 
-        {/* 9. Certificates, Standards & Accreditations */}
-        {certificates.length > 0 && (
-          <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100" aria-labelledby="certs-heading">
-            <div className="w-full px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto">
-              <div className="text-center max-w-2xl mx-auto mb-12">
-                <span className="text-[#c49a2c] text-xs sm:text-sm font-bold uppercase tracking-wider block mb-2">
-                  اعتبارسنجی و استانداردها
-                </span>
-                <h2 id="certs-heading" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0a1628]">
-                  گواهینامه‌ها و مجوزهای رسمی
-                </h2>
-                <p className="text-gray-500 text-sm mt-3 leading-relaxed">
-                  دارنده مجوزهای رسمی از مراجع قانونی، سازمان منطقه آزاد اروند و تأییدیه‌های کیفیت
-                </p>
-              </div>
 
-              <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 max-w-4xl mx-auto">
-                {certificates.map((cert, i) => (
-                  <div
-                    key={cert.id || i}
-                    className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#c49a2c]/40 transition-all flex flex-col items-center gap-3 w-36 sm:w-44 text-center group"
-                  >
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getMediaUrl(cert.image)}
-                        alt={cert.title || `گواهینامه ${i + 1}`}
-                        className="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    </div>
-                    {cert.title && (
-                      <span className="text-xs font-bold text-gray-700 group-hover:text-[#c49a2c] transition-colors line-clamp-2">
-                        {cert.title}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* 10. Direct Call to Action & Factory Visit */}
         <section className="py-16 md:py-20 bg-[#060f1c] text-white relative overflow-hidden" aria-label="تماس و ارتباط با کارخانه">
