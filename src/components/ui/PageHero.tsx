@@ -44,7 +44,7 @@ export default function PageHero({
     >
       {/* Hidden image for SEO (background-image isn't indexed) */}
       {imageUrl && (
-        <img src={imageUrl} alt={imageAlt} className="hidden" aria-hidden="true" />
+        <img src={imageUrl} alt={imageAlt} className="hidden" style={{ display: "none" }} aria-hidden="true" />
       )}
 
       {/* Very subtle dot pattern */}
@@ -64,7 +64,7 @@ export default function PageHero({
         {/* Breadcrumb */}
         {breadcrumb && breadcrumb.length > 0 && (
           <nav className="mb-6" aria-label="مسیر صفحه">
-            <ol className="inline-flex items-center gap-2 text-xs md:text-sm text-gray-400 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5 list-none p-0">
+            <ol className="inline-flex items-center gap-2 text-xs md:text-sm text-gray-400 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5 list-none p-0" style={{ listStyle: "none" }}>
               {breadcrumb.map((item, index) => (
                 <li key={index} className="flex items-center gap-2">
                   {item.href ? (
