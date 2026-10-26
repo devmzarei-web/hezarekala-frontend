@@ -387,7 +387,7 @@ export default async function AboutPage() {
                       </div>
                       <div className="flex justify-between items-center py-1.5 border-b border-white/5">
                         <dt className="text-gray-400">تلفکس و خط مرکزی:</dt>
-                        <dd className="font-bold text-[#e5c158] font-mono" dir="ltr"><PhoneNumber number={COMPANY.telefax} /></dd>
+                        <dd className="font-bold text-[#e5c158] font-sans" dir="ltr"><PhoneNumber number={COMPANY.telefax} /></dd>
                       </div>
                       <div className="flex justify-between items-start py-1.5">
                         <dt className="text-gray-400 shrink-0">محل استقرار کارخانه:</dt>

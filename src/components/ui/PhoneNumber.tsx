@@ -38,6 +38,7 @@ export function parsePhoneNumber(num: string) {
  * Uses an LTR flex container where prefix (061) is the first child (left),
  * separator (-) is the middle child, and main digits (53229528) are the right child.
  * Bidi algorithms CANNOT reorder flex items, guaranteeing 061 stays on the left.
+ * Uses the site's native Persian font (font-sans) with tabular-nums.
  */
 export default function PhoneNumber({ number, className, separator = "-" }: PhoneNumberProps) {
   const { prefix, main } = parsePhoneNumber(number);
@@ -46,7 +47,7 @@ export default function PhoneNumber({ number, className, separator = "-" }: Phon
     return (
       <span
         dir="ltr"
-        className={`inline-block [direction:ltr] [unicode-bidi:bidi-override] font-mono ${className || ""}`}
+        className={`inline-block [direction:ltr] [unicode-bidi:bidi-override] font-sans tabular-nums ${className || ""}`}
       >
         <bdo dir="ltr">{number}</bdo>
       </span>
@@ -56,7 +57,7 @@ export default function PhoneNumber({ number, className, separator = "-" }: Phon
   return (
     <span
       dir="ltr"
-      className={`inline-flex items-center gap-0.5 [direction:ltr] [unicode-bidi:isolate] font-mono ${className || ""}`}
+      className={`inline-flex items-center gap-0.5 [direction:ltr] [unicode-bidi:isolate] font-sans tabular-nums ${className || ""}`}
     >
       <bdo dir="ltr" className="[direction:ltr]">{prefix}</bdo>
       <span className="opacity-70 [direction:ltr] px-0.5">{separator}</span>

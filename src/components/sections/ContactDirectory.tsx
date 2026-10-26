@@ -159,7 +159,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                   <div className="flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-lg">
                     <a
                       href={`mailto:${item.email}`}
-                      className="text-xs font-mono font-bold text-[#0a1628] hover:text-[#c49a2c] transition-colors truncate"
+                      className="text-xs font-sans font-bold text-[#0a1628] hover:text-[#c49a2c] transition-colors truncate"
                       dir="ltr"
                     >
                       {item.email}
@@ -233,7 +233,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${telefax.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-sm font-black text-white hover:text-[#c49a2c] transition-colors bg-white/[0.06] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    className="font-sans text-sm font-black text-white hover:text-[#c49a2c] transition-colors bg-white/[0.06] px-3 py-1.5 rounded-lg inline-flex items-center"
                     dir="ltr"
                   >
                     <PhoneNumber number={telefax} />
@@ -272,7 +272,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${phone2.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    className="font-sans text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
                     dir="ltr"
                   >
                     <PhoneNumber number={phone2} />
@@ -311,7 +311,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${phone3.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    className="font-sans text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
                     dir="ltr"
                   >
                     <PhoneNumber number={phone3} />
@@ -366,7 +366,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${ceoMobile.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-sm font-extrabold text-[#0a1628] hover:text-[#c49a2c] transition-colors inline-flex items-center"
+                    className="font-sans text-sm font-extrabold text-[#0a1628] hover:text-[#c49a2c] transition-colors inline-flex items-center"
                     dir="ltr"
                   >
                     <PhoneNumber number={ceoMobile} />
@@ -432,7 +432,7 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
           <div className="lg:col-span-4 border-t lg:border-t-0 lg:border-r border-gray-200 pt-4 lg:pt-0 lg:pr-6 flex flex-col justify-center space-y-3">
             <span className="text-xs text-gray-500 block">کد پستی ۱۰ رقمی کارخانه:</span>
             <div className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl shadow-sm">
-              <span className="font-mono text-base font-black text-[#0a1628] tracking-widest" dir="ltr">
+              <span className="font-sans text-xl font-bold text-[#0a1628] tracking-widest" dir="rtl">
                 {postalCode}
               </span>
               <button

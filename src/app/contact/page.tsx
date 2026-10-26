@@ -132,7 +132,7 @@ export default async function ContactPage() {
         />
 
         {/* ── Corporate Directory: Channels, Telefax, Phones & Plant Hub ── */}
-        <section className="w-full max-w-full overflow-x-hidden py-12 md:py-16 bg-white" aria-label="راهنمای جامع تماس">
+        <section className="w-full max-w-full overflow-x-hidden py-10 md:py-14 bg-white" aria-label="راهنمای جامع تماس">
           <div className="w-full max-w-full px-4 sm:px-6 md:px-12 lg:px-16">
             <ContactDirectory
               phone={phone}
@@ -150,20 +150,8 @@ export default async function ContactPage() {
           </div>
         </section>
 
-        {/* ── Interactive Message & Quotation Form ── */}
+        {/* ── Interactive Message & Quotation Form (Single Clean Heading from ContactForm) ── */}
         <div className="w-full max-w-full overflow-x-hidden bg-gray-50/50 py-12 border-t border-gray-100">
-          <div className="w-full max-w-full px-4 sm:px-6 md:px-12 lg:px-16 mb-8 text-center">
-            <span className="inline-block px-3 py-1 bg-[#c49a2c]/10 text-[#a88220] rounded-full text-xs font-bold mb-2">
-              سامانه ثبت پیام آنلاین
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black text-[#0a1628]">
-              ارسال پیام مستقیم و درخواست پیش‌فاکتور
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-500 max-w-xl mx-auto mt-2 leading-relaxed">
-              کارشناسان مهندسی فروش و بازرگانی ما در کوتاه‌ترین زمان کاری اطلاعات تکمیلی و پیش‌فاکتور رسمی را به همراه مستندات فنی ارسال خواهند نمود.
-            </p>
-          </div>
-
           <Suspense fallback={<div className="text-center py-16 text-gray-400">در حال بارگذاری فرم تماس...</div>}>
             <ContactForm />
           </Suspense>
