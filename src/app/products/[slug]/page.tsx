@@ -12,7 +12,7 @@ import Link from "next/link";
 import { ArrowRight, Phone, ArrowLeftRight, MessageCircle, FileDown } from "lucide-react";
 import { getSpecLabel, SpecValueDisplay } from "@/lib/specs";
 
-import { DEFAULT_PRODUCTS } from "@/lib/constants";
+import { DEFAULT_PRODUCTS, COMPANY } from "@/lib/constants";
 
 async function getProduct(slug: string) {
   try {
@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const productUrl = `${SITE_URL}/products/${product.slug}`;
   const categoryLabel = getProductCategoryLabel(product.category) || "تجهیزات صنعتی";
   const inquiryUrl = `/contact?product=${encodeURIComponent(product.slug)}`;
-  const whatsappUrl = `https://wa.me/989163337968?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/989166317609?text=${encodeURIComponent(
     `سلام، درخواست استعلام قیمت و مشاوره فنی برای محصول «${product.title}» دارم.`
   )}`;
 
@@ -300,7 +300,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   </Link>
 
                   <a
-                    href="tel:09163337968"
+                    href={`tel:${COMPANY.phone.replace(/[^\d+]/g, "")}`}
                     className="flex items-center justify-center gap-2 w-full text-center bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl font-bold transition-all text-xs"
                   >
                     <Phone size={14} />

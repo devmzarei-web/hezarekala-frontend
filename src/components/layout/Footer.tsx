@@ -5,6 +5,7 @@ import { Phone, Mail, MapPin, ChevronLeft, Printer, Clock, User, ShieldCheck } f
 import type { Settings } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 import { COMPANY } from "@/lib/constants";
+import PhoneNumber from "@/components/ui/PhoneNumber";
 
 const DEFAULT_QUICK_LINKS = [
   { href: "/products", label: "محصولات و تجهیزات" },
@@ -180,10 +181,10 @@ export default function Footer({ settings }: FooterProps) {
                 </div>
                 <a
                   href={`tel:${telefax.replace(/[^\d+]/g, "")}`}
-                  className="block text-sm font-bold text-white hover:text-[#c49a2c] transition-colors tracking-wide font-mono"
+                  className="inline-flex items-center text-sm font-bold text-white hover:text-[#c49a2c] transition-colors tracking-wide font-mono"
                   dir="ltr"
                 >
-                  {telefax}
+                  <PhoneNumber number={telefax} />
                 </a>
               </div>
 
@@ -196,15 +197,17 @@ export default function Footer({ settings }: FooterProps) {
                 <div className="grid grid-cols-2 gap-2" dir="ltr">
                   <a
                     href={`tel:${phone2.replace(/[^\d+]/g, "")}`}
-                    className="text-xs font-semibold text-gray-300 hover:text-[#c49a2c] transition-colors bg-white/[0.04] p-1.5 rounded text-center font-mono"
+                    className="text-xs font-semibold text-gray-300 hover:text-[#c49a2c] transition-colors bg-white/[0.04] p-1.5 rounded text-center font-mono inline-flex items-center justify-center"
+                    dir="ltr"
                   >
-                    {phone2}
+                    <PhoneNumber number={phone2} />
                   </a>
                   <a
                     href={`tel:${phone3.replace(/[^\d+]/g, "")}`}
-                    className="text-xs font-semibold text-gray-300 hover:text-[#c49a2c] transition-colors bg-white/[0.04] p-1.5 rounded text-center font-mono"
+                    className="text-xs font-semibold text-gray-300 hover:text-[#c49a2c] transition-colors bg-white/[0.04] p-1.5 rounded text-center font-mono inline-flex items-center justify-center"
+                    dir="ltr"
                   >
-                    {phone3}
+                    <PhoneNumber number={phone3} />
                   </a>
                 </div>
               </div>

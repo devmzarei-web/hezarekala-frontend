@@ -19,6 +19,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { COMPANY } from "@/lib/constants";
+import PhoneNumber from "@/components/ui/PhoneNumber";
 
 interface ContactDirectoryProps {
   phone?: string | null;
@@ -232,9 +233,10 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${telefax.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-sm font-black text-white hover:text-[#c49a2c] transition-colors bg-white/[0.06] px-3 py-1.5 rounded-lg"
+                    className="font-mono text-sm font-black text-white hover:text-[#c49a2c] transition-colors bg-white/[0.06] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    dir="ltr"
                   >
-                    {telefax}
+                    <PhoneNumber number={telefax} />
                   </a>
                   <button
                     type="button"
@@ -270,9 +272,10 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${phone2.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg"
+                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    dir="ltr"
                   >
-                    {phone2}
+                    <PhoneNumber number={phone2} />
                   </a>
                   <button
                     type="button"
@@ -308,9 +311,10 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${phone3.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg"
+                    className="font-mono text-xs font-bold text-gray-200 hover:text-[#c49a2c] transition-colors bg-white/[0.04] px-3 py-1.5 rounded-lg inline-flex items-center"
+                    dir="ltr"
                   >
-                    {phone3}
+                    <PhoneNumber number={phone3} />
                   </a>
                   <button
                     type="button"
@@ -362,9 +366,10 @@ export default function ContactDirectory(props: ContactDirectoryProps) {
                 <div className="flex items-center gap-2" dir="ltr">
                   <a
                     href={`tel:${ceoMobile.replace(/[^\d+]/g, "")}`}
-                    className="font-mono text-sm font-extrabold text-[#0a1628] hover:text-[#c49a2c] transition-colors"
+                    className="font-mono text-sm font-extrabold text-[#0a1628] hover:text-[#c49a2c] transition-colors inline-flex items-center"
+                    dir="ltr"
                   >
-                    {COMPANY.ceoMobileDisplay || ceoMobile}
+                    <PhoneNumber number={ceoMobile} />
                   </a>
                   <button
                     type="button"

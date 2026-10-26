@@ -28,6 +28,7 @@ import { getSettings, getPage, getTeamMembers, getCertificates } from "@/lib/pay
 import { SITE_URL, PAYLOAD_API_URL } from "@/lib/env";
 import { getMediaUrl } from "@/lib/media";
 import { COMPANY } from "@/lib/constants";
+import PhoneNumber from "@/components/ui/PhoneNumber";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/ui/PageHero";
@@ -386,7 +387,7 @@ export default async function AboutPage() {
                       </div>
                       <div className="flex justify-between items-center py-1.5 border-b border-white/5">
                         <dt className="text-gray-400">تلفکس و خط مرکزی:</dt>
-                        <dd className="font-bold text-[#e5c158] font-mono" dir="ltr">{COMPANY.telefax}</dd>
+                        <dd className="font-bold text-[#e5c158] font-mono" dir="ltr"><PhoneNumber number={COMPANY.telefax} /></dd>
                       </div>
                       <div className="flex justify-between items-start py-1.5">
                         <dt className="text-gray-400 shrink-0">محل استقرار کارخانه:</dt>

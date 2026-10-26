@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, Menu, X, ArrowUpRight } from "lucide-react";
+import { COMPANY } from "@/lib/constants";
+import PhoneNumber from "@/components/ui/PhoneNumber";
 import type { Settings } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 
@@ -118,12 +120,12 @@ export default function Header({ settings }: HeaderProps) {
         <div className="flex items-center gap-2 md:gap-3">
           {/* Phone - Desktop */}
           <a
-            href={`tel:${settings?.phone || "09166310631"}`}
+            href={`tel:${settings?.phone || COMPANY.phone}`}
             className="hidden lg:flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#c49a2c] transition-colors px-2 py-1"
             dir="ltr"
           >
             <Phone size={14} className="text-[#c49a2c]" />
-            <span>{settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱"}</span>
+            <PhoneNumber number={settings?.phone || COMPANY.phone} />
           </a>
 
           {/* CTA Button */}
@@ -178,9 +180,9 @@ export default function Header({ settings }: HeaderProps) {
               </Link>
             );
           })}
-          <div className="flex items-center gap-2 pt-2 mt-2 border-t border-white/5 text-gray-400 text-sm">
+          <div className="flex items-center gap-2 pt-2 mt-2 border-t border-white/5 text-gray-400 text-sm" dir="ltr">
             <Phone size={14} className="text-[#c49a2c]" />
-            <span dir="ltr">{settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱"}</span>
+            <PhoneNumber number={settings?.phone || COMPANY.phone} />
           </div>
           <Link
             href={ctaLink}

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Phone, MessageSquare } from "lucide-react";
+import { COMPANY } from "@/lib/constants";
+import PhoneNumber from "@/components/ui/PhoneNumber";
 import type { Settings } from "@/payload-types";
 
 interface CTABannerProps {
@@ -39,11 +41,12 @@ export default function CTABanner({ settings }: CTABannerProps) {
           className="flex flex-wrap gap-3 md:gap-4 justify-center"
         >
           <a
-            href={`tel:${settings?.phone || "09166310631"}`}
+            href={`tel:${settings?.phone || COMPANY.phone}`}
             className="group inline-flex items-center gap-2 md:gap-3 bg-[#0a1628] hover:bg-black text-white px-5 md:px-8 py-3 md:py-4 rounded-xl font-bold text-sm md:text-base transition-all hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-0.5 active:scale-95"
+            dir="ltr"
           >
             <Phone size={16} className="md:size-18 group-hover:scale-110 transition-transform" />
-            <span dir="ltr">{settings?.phone || "۰۹۱۶۶۳۱۰۶۳۱"}</span>
+            <PhoneNumber number={settings?.phone || COMPANY.phone} />
           </a>
           <Link
             href="/contact"
