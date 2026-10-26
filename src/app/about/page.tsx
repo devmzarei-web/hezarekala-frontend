@@ -384,10 +384,14 @@ export default async function AboutPage() {
                         <dt className="text-gray-400">مدیرعامل:</dt>
                         <dd className="font-bold text-gray-100">{credentialsCeo}</dd>
                       </div>
+                      <div className="flex justify-between items-center py-1.5 border-b border-white/5">
+                        <dt className="text-gray-400">تلفکس و خط مرکزی:</dt>
+                        <dd className="font-bold text-[#e5c158] font-mono" dir="ltr">{COMPANY.telefax}</dd>
+                      </div>
                       <div className="flex justify-between items-start py-1.5">
-                        <dt className="text-gray-400 shrink-0">محل استقرار:</dt>
+                        <dt className="text-gray-400 shrink-0">محل استقرار کارخانه:</dt>
                         <dd className="font-bold text-gray-200 text-left leading-relaxed">
-                          {credentialsLocation}
+                          {credentialsLocation} (کد پستی: {COMPANY.postalCode})
                         </dd>
                       </div>
                     </dl>

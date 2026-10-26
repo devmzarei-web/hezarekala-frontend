@@ -5,11 +5,10 @@ import { SITE_URL } from "@/lib/env";
 import { getMediaUrl } from "@/lib/media";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ContactDirectory from "@/components/sections/ContactDirectory";
 import ContactForm from "@/components/sections/ContactForm";
 import PageHero from "@/components/ui/PageHero";
 import BreadcrumbSchema from "@/components/ui/BreadcrumbSchema";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
-
 import { COMPANY } from "@/lib/constants";
 
 export const revalidate = 60;
@@ -18,16 +17,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("contact");
 
   return {
-    title: page?.metaTitle || page?.title || "تماس با ما",
+    title: page?.metaTitle || page?.title || "تماس با کارخانه و واحدهای بازرگانی و فنی | هزاره کالا",
     description:
       page?.metaDescription ||
       page?.excerpt ||
-      "راه‌های ارتباط با هزاره کالا دانش اروند: آدرس کارخانه در شهرک صنعتی آبادان، شماره تماس، ایمیل و فرم ارسال پیام. پاسخگویی شنبه تا پنجشنبه.",
+      "راه‌های ارتباط رسمی با شرکت هزاره کالا دانش اروند: ایمیل فروش، پشتیبانی فنی، مکاتبات اداری، تلفکس و خطوط مستقیم کارخانه در شهرک صنعتی شماره یک آبادان.",
     alternates: {
       canonical: `${SITE_URL}/contact`,
     },
     openGraph: {
-      title: page?.metaTitle || page?.title || "تماس با ما | هزاره کالا",
+      title: page?.metaTitle || page?.title || "ارتباط با ما و کارخانه | هزاره کالا دانش اروند",
       description: page?.metaDescription || page?.excerpt || "",
       images: page?.heroImage ? [{ url: getMediaUrl(page.heroImage) }] : [],
     },
@@ -38,24 +37,61 @@ export default async function ContactPage() {
   const [settings, page] = await Promise.all([getSettings(), getPage("contact")]);
 
   const phone = settings?.phone || COMPANY.phone;
-  const email = settings?.email || COMPANY.email;
+  const telefax = (settings as any)?.telefax || COMPANY.telefax;
+  const phone2 = (settings as any)?.phone2 || COMPANY.phoneLines[1]?.number;
+  const phone3 = (settings as any)?.phone3 || COMPANY.phoneLines[2]?.number;
+  const email = settings?.email || COMPANY.emails.info.address;
+  const salesEmail = (settings as any)?.salesEmail || COMPANY.emails.sales.address;
+  const supportEmail = (settings as any)?.supportEmail || COMPANY.emails.support.address;
   const address = settings?.address || COMPANY.address;
+  const postalCode = (settings as any)?.postalCode || COMPANY.postalCode;
+  const ceoName = (settings as any)?.ceoName || COMPANY.ceo;
+  const ceoMobile = (settings as any)?.ceoMobile || COMPANY.ceoMobile;
 
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: settings?.siteName || "هزاره کالا دانش اروند",
-    description: "طراحی و ساخت پمپ‌های صنعتی بزرگ",
+    name: settings?.siteName || COMPANY.nameFa,
+    legalName: COMPANY.nameFa,
+    description: COMPANY.slogan,
     image: settings?.logo ? getMediaUrl(settings.logo) : "",
-    telephone: phone.replace(/[^\d+]/g, ""),
-    email,
+    telephone: [phone.replace(/[^\d+]/g, ""), phone2.replace(/[^\d+]/g, ""), phone3.replace(/[^\d+]/g, "")],
+    faxNumber: telefax.replace(/[^\d+]/g, ""),
+    email: [email, salesEmail, supportEmail],
     address: {
       "@type": "PostalAddress",
       streetAddress: address,
+      postalCode: COMPANY.postalCodeEn,
       addressLocality: "آبادان",
       addressRegion: "خوزستان",
       addressCountry: "IR",
     },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: phone.replace(/[^\d+]/g, ""),
+        contactType: "sales",
+        email: salesEmail,
+        areaServed: "IR",
+        availableLanguage: ["Persian", "English"],
+      },
+      {
+        "@type": "ContactPoint",
+        telephone: phone2.replace(/[^\d+]/g, ""),
+        contactType: "technical support",
+        email: supportEmail,
+        areaServed: "IR",
+        availableLanguage: ["Persian", "English"],
+      },
+      {
+        "@type": "ContactPoint",
+        telephone: phone.replace(/[^\d+]/g, ""),
+        contactType: "customer service",
+        email: email,
+        areaServed: "IR",
+        availableLanguage: ["Persian", "English"],
+      },
+    ],
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -85,72 +121,49 @@ export default async function ContactPage() {
         <Header settings={settings} />
 
         <PageHero
-          title={page?.title || "تماس با ما"}
-          subtitle={page?.subtitle || "با ما در ارتباط باشید"}
-          excerpt={page?.excerpt || ""}
+          title={page?.title || "ارتباط با کارخانه و دپارتمان‌های تخصصی"}
+          subtitle={page?.subtitle || "راه‌های ارتباطی مستقیم با واحدهای فروش، مهندسی و مدیریت"}
+          excerpt={
+            page?.excerpt ||
+            "جهت استعلام مشخصات فنی، مناقصات، درخواست پیش‌فاکتور، مشاوره مهندسی یا هماهنگی بازدید حضوری از کارخانه در شهرک صنعتی آبادان."
+          }
           image={page?.heroImage}
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "تماس با ما" }]}
         />
 
-        <section className="w-full max-w-full overflow-x-hidden py-12 md:py-16 bg-white" aria-label="اطلاعات تماس">
+        {/* ── Corporate Directory: Channels, Telefax, Phones & Plant Hub ── */}
+        <section className="w-full max-w-full overflow-x-hidden py-12 md:py-16 bg-white" aria-label="راهنمای جامع تماس">
           <div className="w-full max-w-full px-4 sm:px-6 md:px-12 lg:px-16">
-            <div className="grid w-full min-w-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              <div className="group min-w-0 text-center p-5 sm:p-6 md:p-8 bg-gray-50 hover:bg-white border border-gray-100 hover:border-[#c49a2c]/20 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-[#c49a2c]/10 group-hover:bg-[#c49a2c]/20 rounded-xl flex items-center justify-center mx-auto mb-4 transition-colors">
-                  <Phone className="w-7 h-7 text-[#c49a2c]" aria-hidden="true" />
-                </div>
-                <h3 className="font-bold text-[#0a1628] mb-2">تلفن</h3>
-                <a
-                  href={`tel:${phone.replace(/\s/g, "")}`}
-                  className="block max-w-full text-gray-600 text-sm hover:text-[#c49a2c] transition-colors break-words"
-                  dir="ltr"
-                >
-                  {phone}
-                </a>
-              </div>
-
-              <div className="group min-w-0 text-center p-5 sm:p-6 md:p-8 bg-gray-50 hover:bg-white border border-gray-100 hover:border-[#c49a2c]/20 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-[#c49a2c]/10 group-hover:bg-[#c49a2c]/20 rounded-xl flex items-center justify-center mx-auto mb-4 transition-colors">
-                  <Mail className="w-7 h-7 text-[#c49a2c]" aria-hidden="true" />
-                </div>
-                <h3 className="font-bold text-[#0a1628] mb-2">ایمیل</h3>
-                <a
-                  href={`mailto:${email}`}
-                  className="block max-w-full text-gray-600 text-sm hover:text-[#c49a2c] transition-colors break-all"
-                  dir="ltr"
-                >
-                  {email}
-                </a>
-              </div>
-
-              <div className="group min-w-0 text-center p-5 sm:p-6 md:p-8 bg-gray-50 hover:bg-white border border-gray-100 hover:border-[#c49a2c]/20 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-[#c49a2c]/10 group-hover:bg-[#c49a2c]/20 rounded-xl flex items-center justify-center mx-auto mb-4 transition-colors">
-                  <MapPin className="w-7 h-7 text-[#c49a2c]" aria-hidden="true" />
-                </div>
-                <h3 className="font-bold text-[#0a1628] mb-2">آدرس</h3>
-                <address className="max-w-full text-gray-600 text-xs leading-relaxed not-italic break-words">
-                  {address}
-                </address>
-              </div>
-
-              <div className="group min-w-0 text-center p-5 sm:p-6 md:p-8 bg-gray-50 hover:bg-white border border-gray-100 hover:border-[#c49a2c]/20 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-[#c49a2c]/10 group-hover:bg-[#c49a2c]/20 rounded-xl flex items-center justify-center mx-auto mb-4 transition-colors">
-                  <Clock className="w-7 h-7 text-[#c49a2c]" aria-hidden="true" />
-                </div>
-                <h3 className="font-bold text-[#0a1628] mb-2">ساعات کاری</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  شنبه تا پنجشنبه
-                  <br />
-                  <span dir="ltr" className="text-xs">
-                    ۸:۰۰ - ۱۷:۰۰
-                  </span>
-                </p>
-              </div>
-            </div>
+            <ContactDirectory
+              phone={phone}
+              telefax={telefax}
+              phone2={phone2}
+              phone3={phone3}
+              email={email}
+              salesEmail={salesEmail}
+              supportEmail={supportEmail}
+              address={address}
+              postalCode={postalCode}
+              ceoName={ceoName}
+              ceoMobile={ceoMobile}
+            />
           </div>
         </section>
 
-        <div className="w-full max-w-full overflow-x-hidden">
+        {/* ── Interactive Message & Quotation Form ── */}
+        <div className="w-full max-w-full overflow-x-hidden bg-gray-50/50 py-12 border-t border-gray-100">
+          <div className="w-full max-w-full px-4 sm:px-6 md:px-12 lg:px-16 mb-8 text-center">
+            <span className="inline-block px-3 py-1 bg-[#c49a2c]/10 text-[#a88220] rounded-full text-xs font-bold mb-2">
+              سامانه ثبت پیام آنلاین
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-[#0a1628]">
+              ارسال پیام مستقیم و درخواست پیش‌فاکتور
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 max-w-xl mx-auto mt-2 leading-relaxed">
+              کارشناسان مهندسی فروش و بازرگانی ما در کوتاه‌ترین زمان کاری اطلاعات تکمیلی و پیش‌فاکتور رسمی را به همراه مستندات فنی ارسال خواهند نمود.
+            </p>
+          </div>
+
           <Suspense fallback={<div className="text-center py-16 text-gray-400">در حال بارگذاری فرم تماس...</div>}>
             <ContactForm />
           </Suspense>

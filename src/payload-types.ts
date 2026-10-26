@@ -513,8 +513,16 @@ export interface Setting {
   id: string;
   siteName?: string | null;
   phone?: string | null;
+  telefax?: string | null;
+  phone2?: string | null;
+  phone3?: string | null;
   email?: string | null;
+  salesEmail?: string | null;
+  supportEmail?: string | null;
   address?: string | null;
+  postalCode?: string | null;
+  ceoName?: string | null;
+  ceoMobile?: string | null;
   aboutText?: string | null;
   logo?: (string | null) | Media;
   logoDark?: (string | null) | Media;
