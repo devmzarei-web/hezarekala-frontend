@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Image from "next/image";
-import { ArrowRight, Calendar, Camera, Video, Maximize2 } from "lucide-react";
+import { ArrowRight, Calendar, Camera, Video, Maximize2, Play } from "lucide-react";
 import type { Album } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 
@@ -41,14 +42,54 @@ export default function AlbumDetail({
     }
   })();
 
-  const resolvedVideoUrl = (() => {
-    if (!album.videoUrl) return "";
-    if (album.videoUrl.startsWith("http")) return album.videoUrl;
-    if (album.videoUrl.startsWith("/media/")) {
-      return `https://cms.hezarehkala.ir${album.videoUrl}`;
+  const resolveVideoUrl = (rawUrl?: string | null): string => {
+    if (!rawUrl) return "";
+    if (rawUrl.startsWith("http")) return rawUrl;
+    if (rawUrl.startsWith("/media/")) {
+      return `https://cms.hezarehkala.ir${rawUrl}`;
     }
-    return album.videoUrl;
-  })();
+    return rawUrl;
+  };
+
+  const allVideos = useMemo(() => {
+    const list: {
+      id: string;
+      title: string;
+      url: string;
+      posterUrl: string;
+    }[] = [];
+
+    if (album.videoUrl) {
+      const posterUrl = album.videoPoster
+        ? getMediaUrl(album.videoPoster)
+        : coverUrl;
+      list.push({
+        id: "video-main",
+        title: "گزارش اصلی رویداد",
+        url: resolveVideoUrl(album.videoUrl),
+        posterUrl,
+      });
+    }
+
+    if (Array.isArray(album.videos)) {
+      album.videos.forEach((item, idx) => {
+        if (!item?.videoUrl) return;
+        const posterUrl = item.poster ? getMediaUrl(item.poster) : coverUrl;
+        list.push({
+          id: item.id || `video-${idx}`,
+          title:
+            item.title ||
+            `بخش ${(idx + (album.videoUrl ? 2 : 1)).toLocaleString("fa-IR")} - گزارش ویدیویی`,
+          url: resolveVideoUrl(item.videoUrl),
+          posterUrl,
+        });
+      });
+    }
+
+    return list;
+  }, [album, coverUrl]);
+
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
 
   return (
     <div className="w-full text-right animate-fadeIn">
@@ -71,12 +112,16 @@ export default function AlbumDetail({
             <Camera size={14} className="text-[#c49a2c]" />
             <span>{photos.length.toLocaleString("fa-IR")} تصویر</span>
           </span>
-          {album.videoUrl && (
+          {allVideos.length > 0 && (
             <>
               <span className="text-white/20">•</span>
               <span className="inline-flex items-center gap-1 text-red-300">
                 <Video size={14} className="text-red-400" />
-                <span>شامل ویدیو</span>
+                <span>
+                  {allVideos.length === 1
+                    ? "شامل ویدیو"
+                    : `${allVideos.length.toLocaleString("fa-IR")} ویدیو`}
+                </span>
               </span>
             </>
           )}
@@ -121,26 +166,79 @@ export default function AlbumDetail({
       </div>
 
       {/* Video Player Section (if available) */}
-      {resolvedVideoUrl && (
-        <div className="mb-12 rounded-3xl overflow-hidden bg-[#07111e] border border-red-500/20 shadow-2xl p-4 sm:p-8">
-          <div className="flex items-center gap-2 mb-4 text-[#e0b74c]">
-            <Video size={20} className="text-red-400" />
-            <h2 className="text-base sm:text-lg font-bold text-white">
-              ویدیو و گزارش تصویری رویداد
-            </h2>
+      {allVideos.length > 0 && (
+        <div className="mb-12 rounded-3xl overflow-hidden bg-gradient-to-b from-[#091526] to-[#050b14] border border-red-500/20 shadow-2xl p-5 sm:p-8">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-[#e0b74c]">
+              <Video size={22} className="text-red-400" />
+              <h2 className="text-base sm:text-xl font-bold text-white">
+                {allVideos[activeVideoIndex]?.title || "ویدیو و گزارش تصویری رویداد"}
+              </h2>
+            </div>
+            {allVideos.length > 1 && (
+              <span className="text-xs bg-red-950/80 border border-red-500/30 text-red-200 px-3 py-1 rounded-full font-bold">
+                ویدیو {(activeVideoIndex + 1).toLocaleString("fa-IR")} از {allVideos.length.toLocaleString("fa-IR")}
+              </span>
+            )}
           </div>
 
-          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner">
+          {/* Active Video Player */}
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/10 mb-4">
             <video
+              key={allVideos[activeVideoIndex]?.url}
               controls
               playsInline
-              poster={coverUrl}
+              poster={allVideos[activeVideoIndex]?.posterUrl}
               className="w-full h-full object-cover"
             >
-              <source src={resolvedVideoUrl} type="video/mp4" />
+              <source src={allVideos[activeVideoIndex]?.url} type="video/mp4" />
               مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
             </video>
           </div>
+
+          {/* Multi-Video Playlist Selector (if more than 1 video) */}
+          {allVideos.length > 1 && (
+            <div className="pt-4 border-t border-white/10">
+              <p className="text-xs text-gray-400 mb-3 font-medium">
+                سایر ویدیوها و گزارش‌های این رویداد:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {allVideos.map((vid, idx) => {
+                  const isActive = idx === activeVideoIndex;
+                  return (
+                    <button
+                      key={vid.id || idx}
+                      type="button"
+                      onClick={() => setActiveVideoIndex(idx)}
+                      className={`flex items-center gap-3 p-2.5 rounded-xl border text-right transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-red-950/40 border-red-500/60 shadow-lg text-white"
+                          : "bg-white/[0.03] border-white/10 hover:border-white/30 text-gray-300 hover:text-white"
+                      }`}
+                    >
+                      <div className="relative w-12 h-10 rounded-lg overflow-hidden shrink-0 bg-black/60 border border-white/10 flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={vid.posterUrl}
+                          alt={vid.title}
+                          className="w-full h-full object-cover opacity-60"
+                        />
+                        <Play size={14} className="absolute text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold truncate">
+                          {vid.title}
+                        </p>
+                        <span className="text-[11px] text-gray-400">
+                          {isActive ? "در حال پخش" : "کلیک جهت پخش"}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

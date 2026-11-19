@@ -750,6 +750,13 @@ export interface AlbumPhoto {
   id?: string | null;
 }
 
+export interface AlbumVideoItem {
+  id?: string | null;
+  title?: string | null;
+  videoUrl: string;
+  poster?: (string | null) | Media;
+}
+
 export interface Album {
   id: string;
   title: string;
@@ -760,6 +767,8 @@ export interface Album {
   summary: string;
   description?: any;
   videoUrl?: string | null;
+  videoPoster?: (string | null) | Media;
+  videos?: AlbumVideoItem[] | null;
   photos: AlbumPhoto[];
   isFeaturedOnHome?: boolean | null;
   order?: number | null;
