@@ -46,6 +46,7 @@ export default function EventSpotlightCapsule({
               src={coverUrl}
               alt={album.title}
               fill
+              unoptimized
               sizes="48px"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />

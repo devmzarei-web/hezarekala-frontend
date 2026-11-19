@@ -11,15 +11,28 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "cms.hezarehkala.ir",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "hezarehkala.ir",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.hezarehkala.ir",
+        pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "cms.hezarehkala.ir",
+        protocol: "http",
+        hostname: "localhost",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        pathname: "/**",
       },
     ],
     formats: ["image/webp"],

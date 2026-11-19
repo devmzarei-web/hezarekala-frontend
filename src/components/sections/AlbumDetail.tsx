@@ -41,6 +41,15 @@ export default function AlbumDetail({
     }
   })();
 
+  const resolvedVideoUrl = (() => {
+    if (!album.videoUrl) return "";
+    if (album.videoUrl.startsWith("http")) return album.videoUrl;
+    if (album.videoUrl.startsWith("/media/")) {
+      return `https://cms.hezarehkala.ir${album.videoUrl}`;
+    }
+    return album.videoUrl;
+  })();
+
   return (
     <div className="w-full text-right animate-fadeIn">
       {/* Top Back Navigation Bar */}
@@ -48,7 +57,7 @@ export default function AlbumDetail({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-[#c49a2c]/10 text-gray-200 hover:text-[#c49a2c] border border-white/10 hover:border-[#c49a2c]/40 transition-all cursor-pointer font-medium text-sm group"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-[#c49a2c]/10 text-gray-200 hover:text-[#c49a2c] border border-white/10 hover:border-[#c49a2c]/40 transition-all cursor-pointer font-medium text-sm group"
         >
           <ArrowRight
             size={18}
@@ -75,37 +84,45 @@ export default function AlbumDetail({
       </div>
 
       {/* Album Header & Story Section */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#0d1b2f] via-[#091424] to-[#060e1b] border border-[#c49a2c]/30 shadow-2xl p-6 sm:p-10 mb-10">
-        <div className="flex flex-wrap items-center gap-2.5 mb-4">
-          <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#c49a2c]/15 text-[#e0b74c] border border-[#c49a2c]/30">
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#0d1b2f] via-[#091424] to-[#060e1b] border border-[#c49a2c]/30 shadow-2xl p-6 sm:p-10 md:p-14 mb-12">
+        <div className="flex flex-wrap items-center gap-2.5 mb-5">
+          <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#c49a2c]/15 text-[#e0b74c] border border-[#c49a2c]/30">
             {CATEGORY_LABELS[album.category] || "رویداد"}
           </span>
           {formattedDate && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
               <Calendar size={13} className="text-[#c49a2c]" />
               <span>{formattedDate}</span>
             </span>
           )}
         </div>
 
-        <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight sm:leading-tight mb-4">
+        <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight sm:leading-snug mb-6">
           {album.title}
         </h1>
 
-        <p className="text-sm sm:text-base text-[#e0b74c]/90 font-medium leading-relaxed mb-6 max-w-4xl">
-          {album.summary}
-        </p>
+        <div className="p-4 sm:p-6 rounded-2xl bg-black/30 border border-[#c49a2c]/20 mb-8">
+          <p className="text-sm sm:text-base text-[#e0b74c] font-medium leading-loose text-justify [text-align-last:right]">
+            {album.summary}
+          </p>
+        </div>
 
         {album.description && (
-          <div className="pt-6 border-t border-white/10 text-xs sm:text-sm text-gray-300 leading-relaxed max-w-4xl space-y-3">
-            <p>{album.description}</p>
+          <div className="pt-6 border-t border-white/10">
+            <h3 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#c49a2c]" />
+              <span>شرح و گزارش تفصیلی رویداد</span>
+            </h3>
+            <div className="p-5 sm:p-8 rounded-2xl bg-white/[0.02] border border-white/10 text-xs sm:text-sm md:text-base text-gray-200 leading-loose text-justify [text-align-last:right] space-y-4">
+              <p>{album.description}</p>
+            </div>
           </div>
         )}
       </div>
 
       {/* Video Player Section (if available) */}
-      {album.videoUrl && (
-        <div className="mb-12 rounded-3xl overflow-hidden bg-[#07111e] border border-red-500/20 shadow-2xl p-4 sm:p-6">
+      {resolvedVideoUrl && (
+        <div className="mb-12 rounded-3xl overflow-hidden bg-[#07111e] border border-red-500/20 shadow-2xl p-4 sm:p-8">
           <div className="flex items-center gap-2 mb-4 text-[#e0b74c]">
             <Video size={20} className="text-red-400" />
             <h2 className="text-base sm:text-lg font-bold text-white">
@@ -120,7 +137,7 @@ export default function AlbumDetail({
               poster={coverUrl}
               className="w-full h-full object-cover"
             >
-              <source src={album.videoUrl} type="video/mp4" />
+              <source src={resolvedVideoUrl} type="video/mp4" />
               مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
             </video>
           </div>
@@ -169,6 +186,7 @@ export default function AlbumDetail({
                     src={photoUrl}
                     alt={caption}
                     fill
+                    unoptimized
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   />
