@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, Play, Pause } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Settings } from "@/payload-types";
+import type { Settings, Album } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
+import EventSpotlightCapsule from "@/components/sections/EventSpotlightCapsule";
 
 export interface HeroSlideData {
   image: string;
@@ -40,6 +41,7 @@ interface HeroProps {
   heroVideoUrl?: string | null;
   heroVideo?: HeroVideoData | null;
   settings?: Settings | null;
+  featuredAlbum?: Album | null;
 }
 
 const DEFAULT_BRAND_COPY = {
@@ -96,6 +98,7 @@ export default function Hero({
   heroVideoUrl = null,
   heroVideo = null,
   settings,
+  featuredAlbum = null,
 }: HeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -475,7 +478,12 @@ export default function Hero({
         </div>
 
         {/* Bottom Navigation & Controls */}
-        <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 pb-6 md:pb-8 flex flex-col items-center gap-5 md:gap-6">
+        <div className="w-full px-4 md:px-8 lg:px-16 xl:px-20 pb-6 md:pb-8 flex flex-col items-center gap-4 md:gap-5">
+          {/* Hero-Docked Event Spotlight Capsule */}
+          {featuredAlbum && (
+            <EventSpotlightCapsule album={featuredAlbum} className="mb-1" />
+          )}
+
           {/* Slide Indicators with 5-Second Linear Progress Fill */}
           {!effectiveVideoUrl && processedSlides.length > 1 && (
             <div className="flex items-center gap-3 md:gap-4 bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -16,8 +16,14 @@ import {
   Sparkles,
   X,
   Tag,
+  BookOpen,
+  Camera,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Album } from "@/payload-types";
+import { getMediaUrl } from "@/lib/media";
+import AlbumCard from "@/components/sections/AlbumCard";
+import AlbumDetail from "@/components/sections/AlbumDetail";
 import ImageLightbox, { type LightboxImage } from "@/components/ui/ImageLightbox";
 
 export interface UnifiedGalleryItem {
@@ -29,15 +35,21 @@ export interface UnifiedGalleryItem {
   categoryLabel: string;
   sourceTitle?: string;
   sourceLink?: string;
-  sourceType?: "product" | "project" | "gallery" | "general";
+  sourceType?: "product" | "project" | "gallery" | "album" | "general";
   alt?: string;
+  caption?: string;
 }
 
 interface GalleryViewProps {
-  items: UnifiedGalleryItem[];
+  albums?: Album[];
+  items?: UnifiedGalleryItem[];
+  initialAlbumSlug?: string | null;
 }
 
-const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const CATEGORY_ICON_MAP: Record<
+  string,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
   all: ImageIcon,
   products: Package,
   centrifugal: Package,
@@ -48,14 +60,106 @@ const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ size?: number; cla
   projects: Building2,
   company: Users,
   team: Users,
+  "media-coverage": Camera,
   other: Sparkles,
 };
 
-export default function GalleryView({ items = [] }: GalleryViewProps) {
+const ALBUM_CATEGORY_FILTERS = [
+  { key: "all", label: "همه آلبوم‌ها" },
+  { key: "media-coverage", label: "پوشش رسانه‌ای و خبری" },
+  { key: "workshop", label: "کارگاه و خط تولید" },
+  { key: "exhibition", label: "نمایشگاه‌ها" },
+  { key: "milestone", label: "افتخارات و دستاوردها" },
+];
+
+export default function GalleryView({
+  albums = [],
+  items = [],
+  initialAlbumSlug = null,
+}: GalleryViewProps) {
+  // Main Dual-Mode Tab state: 'albums' vs 'all-photos'
+  const [activeMainTab, setActiveMainTab] = useState<"albums" | "all-photos">(
+    initialAlbumSlug ? "albums" : "albums"
+  );
+
+  // Selected Album for detail view
+  const [selectedAlbumSlug, setSelectedAlbumSlug] = useState<string | null>(
+    initialAlbumSlug
+  );
+
+  // Album category filter and search
+  const [albumCategory, setAlbumCategory] = useState<string>("all");
+  const [albumSearch, setAlbumSearch] = useState<string>("");
+
+  // All-photos archive filter and view state
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "sections">("grid");
+
+  // Lightbox state
+  const [lightboxImages, setLightboxImages] = useState<LightboxImage[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Sync selected album from initialAlbumSlug or browser popstate
+  useEffect(() => {
+    if (initialAlbumSlug) {
+      setSelectedAlbumSlug(initialAlbumSlug);
+      setActiveMainTab("albums");
+    }
+  }, [initialAlbumSlug]);
+
+  const selectedAlbum = useMemo(() => {
+    if (!selectedAlbumSlug) return null;
+    return albums.find((a) => a.slug === selectedAlbumSlug) ?? null;
+  }, [albums, selectedAlbumSlug]);
+
+  // Handle URL updates gracefully without reload
+  const handleSelectAlbum = (album: Album) => {
+    setSelectedAlbumSlug(album.slug);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("album", album.slug);
+      url.searchParams.delete("tab");
+      window.history.pushState({}, "", url.toString());
+      window.scrollTo({ top: 300, behavior: "smooth" });
+    }
+  };
+
+  const handleBackToAlbums = () => {
+    setSelectedAlbumSlug(null);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("album");
+      window.history.pushState({}, "", url.toString());
+    }
+  };
+
+  const handleSwitchTab = (tab: "albums" | "all-photos") => {
+    setActiveMainTab(tab);
+    if (tab === "all-photos") {
+      setSelectedAlbumSlug(null);
+    }
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("album");
+      url.searchParams.set("tab", tab);
+      window.history.pushState({}, "", url.toString());
+    }
+  };
+
+  // Filtered albums
+  const filteredAlbums = useMemo(() => {
+    return albums.filter((alb) => {
+      const matchCat = albumCategory === "all" || alb.category === albumCategory;
+      const q = albumSearch.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        alb.title.toLowerCase().includes(q) ||
+        alb.summary.toLowerCase().includes(q) ||
+        (alb.description && alb.description.toLowerCase().includes(q));
+      return matchCat && matchSearch;
+    });
+  }, [albums, albumCategory, albumSearch]);
 
   // Dynamically compute category tabs from the actual incoming dataset
   const dynamicCategories = useMemo(() => {
@@ -80,7 +184,7 @@ export default function GalleryView({ items = [] }: GalleryViewProps) {
     ];
   }, [items]);
 
-  // Filtered items based on active category and search
+  // Filtered individual items for "All Photos" mode
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const matchCategory = activeCategory === "all" || item.category === activeCategory;
@@ -96,20 +200,7 @@ export default function GalleryView({ items = [] }: GalleryViewProps) {
     });
   }, [items, activeCategory, searchQuery]);
 
-  // Lightbox images list
-  const lightboxImages: LightboxImage[] = useMemo(() => {
-    return filteredItems.map((item) => ({
-      url: item.imageUrl,
-      thumbnailUrl: item.thumbnailUrl || item.imageUrl,
-      title: item.title,
-      alt: item.alt || item.title,
-      sourceLink: item.sourceLink,
-      sourceTitle: item.sourceTitle,
-      categoryLabel: item.categoryLabel,
-    }));
-  }, [filteredItems]);
-
-  // Grouped items for Sectioned view (dynamically generated from actual categories)
+  // Grouped items for Sectioned view
   const sectionedGroups = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const groupsMap = new Map<
@@ -143,7 +234,34 @@ export default function GalleryView({ items = [] }: GalleryViewProps) {
     return Array.from(groupsMap.values()).filter((g) => g.items.length > 0);
   }, [items, searchQuery]);
 
-  const openLightbox = (index: number) => {
+  // Open Lightbox for an album photo
+  const openAlbumPhotoLightbox = (photoIndex: number) => {
+    if (!selectedAlbum || !selectedAlbum.photos) return;
+    const images: LightboxImage[] = selectedAlbum.photos.map((p, idx) => ({
+      url: getMediaUrl(p.image),
+      thumbnailUrl: getMediaUrl(p.image),
+      title: `${selectedAlbum.title} — عکس ${(idx + 1).toLocaleString("fa-IR")}`,
+      caption: p.caption || undefined,
+      alt: p.caption || selectedAlbum.title,
+      categoryLabel: "گزارش اختصاصی",
+    }));
+    setLightboxImages(images);
+    setLightboxIndex(photoIndex);
+  };
+
+  // Open Lightbox for archive items
+  const openArchiveLightbox = (index: number) => {
+    const images: LightboxImage[] = filteredItems.map((item) => ({
+      url: item.imageUrl,
+      thumbnailUrl: item.thumbnailUrl || item.imageUrl,
+      title: item.title,
+      caption: item.caption,
+      alt: item.alt || item.title,
+      sourceLink: item.sourceLink,
+      sourceTitle: item.sourceTitle,
+      categoryLabel: item.categoryLabel,
+    }));
+    setLightboxImages(images);
     setLightboxIndex(index);
   };
 
@@ -162,310 +280,382 @@ export default function GalleryView({ items = [] }: GalleryViewProps) {
       case "company":
       case "team":
         return "bg-purple-500/15 text-purple-800 border-purple-500/30";
+      case "media-coverage":
+        return "bg-[#c49a2c]/20 text-[#c49a2c] border-[#c49a2c]/40";
       default:
         return "bg-gray-500/15 text-gray-800 border-gray-500/30";
     }
   };
 
   return (
-    <div className="w-full bg-gray-50/50 py-12 md:py-16" dir="rtl">
+    <div className="w-full bg-gradient-to-b from-[#060f1c] via-[#091526] to-[#040a14] py-10 md:py-16 text-white min-h-[600px]" dir="rtl">
       <div className="w-full px-4 sm:px-6 md:px-12 lg:px-16 max-w-7xl mx-auto">
-        {/* Top Control Bar: Search & Dynamic Categories */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 mb-8 space-y-5">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Search Input */}
-            <div className="relative w-full md:w-80">
-              <Search
-                size={18}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="جستجو در تصاویر، محصولات و پروژه‌ها..."
-                className="w-full pl-9 pr-10 py-2.5 bg-gray-50 hover:bg-gray-100/80 focus:bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#c49a2c] focus:ring-2 focus:ring-[#c49a2c]/20 transition-all"
-              />
-              {searchQuery && (
+        {/* If an album is selected, render AlbumDetail view directly */}
+        {selectedAlbum ? (
+          <AlbumDetail
+            album={selectedAlbum}
+            onBack={handleBackToAlbums}
+            onPhotoClick={openAlbumPhotoLightbox}
+          />
+        ) : (
+          <>
+            {/* Main Dual-Mode View Switcher Tabs */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 sm:mb-10 pb-6 border-b border-white/10">
+              <div className="flex items-center p-1.5 rounded-2xl bg-black/40 border border-[#c49a2c]/30 backdrop-blur-md w-full sm:w-auto shadow-xl">
                 <button
                   type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
-                  aria-label="پاک کردن جستجو"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* View Mode Toggle & Total Counter */}
-            <div className="flex items-center justify-between w-full md:w-auto gap-4">
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                نمایش <span className="font-bold text-[#0a1628]">{filteredItems.length}</span> تصویر یکتا
-              </span>
-
-              <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200/80">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("grid")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === "grid"
-                      ? "bg-white text-[#0a1628] shadow-sm"
-                      : "text-gray-500 hover:text-gray-800"
+                  onClick={() => handleSwitchTab("albums")}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    activeMainTab === "albums"
+                      ? "bg-gradient-to-r from-[#c49a2c] to-[#e0b74c] text-[#060f1c] shadow-lg shadow-[#c49a2c]/20"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
-                  title="نمایش یکپارچه"
                 >
-                  <Grid size={14} />
-                  <span>آرشیو فشرده</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setViewMode("sections")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === "sections"
-                      ? "bg-white text-[#0a1628] shadow-sm"
-                      : "text-gray-500 hover:text-gray-800"
-                  }`}
-                  title="نمایش بخش‌بندی شده"
-                >
-                  <Layers size={14} />
-                  <span>بخش‌بندی</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Dynamic Category Filter Tabs */}
-          {viewMode === "grid" && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none border-t border-gray-100">
-              {dynamicCategories.map((tab) => {
-                const IconComponent = CATEGORY_ICON_MAP[tab.key] || Tag;
-                const isActive = activeCategory === tab.key;
-
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setActiveCategory(tab.key)}
-                    className={`shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-[#060f1c] text-[#e5c158] shadow-md shadow-black/10 scale-[1.02]"
-                        : "bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200/60"
+                  <BookOpen size={18} />
+                  <span>رویدادها و گزارش‌ها (آلبوم‌ها)</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${
+                      activeMainTab === "albums"
+                        ? "bg-[#060f1c] text-[#e0b74c]"
+                        : "bg-white/10 text-gray-300"
                     }`}
                   >
-                    <IconComponent size={15} className={isActive ? "text-[#c49a2c]" : "text-gray-400"} />
-                    <span>{tab.label}</span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                        isActive
-                          ? "bg-[#c49a2c] text-black"
-                          : "bg-gray-200/80 text-gray-600"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                    {albums.length.toLocaleString("fa-IR")}
+                  </span>
+                </button>
 
-        {/* Content Area */}
-        {filteredItems.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm max-w-lg mx-auto">
-            <div className="w-16 h-16 bg-amber-50 text-[#c49a2c] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search size={28} />
-            </div>
-            <h3 className="text-lg font-bold text-[#0a1628] mb-2">تصویری یافت نشد</h3>
-            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-              با معیارهای فیلتر یا جستجوی وارد شده تصویری در آرشیو پیدا نشد.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveCategory("all");
-                setSearchQuery("");
-              }}
-              className="bg-[#c49a2c] hover:bg-[#d4a82c] text-black font-bold px-5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
-            >
-              نمایش همه تصاویر
-            </button>
-          </div>
-        ) : viewMode === "grid" ? (
-          /* High-Density Compact Grid View */
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4.5">
-            {filteredItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3) }}
-                className="group relative bg-white rounded-2xl overflow-hidden border border-gray-200/80 shadow-sm hover:shadow-xl hover:border-[#c49a2c]/40 transition-all duration-300 flex flex-col cursor-pointer"
-                onClick={() => openLightbox(index)}
-              >
-                {/* Image Container with Aspect Ratio */}
-                <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.thumbnailUrl || item.imageUrl}
-                    alt={item.alt || item.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                  />
-
-                  {/* Category Pill on top-right */}
-                  <div className="absolute top-2.5 right-2.5 z-10">
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-sm backdrop-blur-md ${getCategoryBadgeColor(
-                        item.category
-                      )} bg-white/95`}
-                    >
-                      {item.categoryLabel}
-                    </span>
-                  </div>
-
-                  {/* Zoom Badge on top-left (visible on hover) */}
-                  <div className="absolute top-2.5 left-2.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md text-[#e5c158] flex items-center justify-center shadow-md">
-                      <ZoomIn size={14} />
-                    </span>
-                  </div>
-
-                  {/* Subtle Gradient Shadow */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                </div>
-
-                {/* Compact Card Details Footer */}
-                <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1 bg-white">
-                  <h4
-                    className="text-xs sm:text-sm font-bold text-[#0a1628] group-hover:text-[#c49a2c] transition-colors truncate mb-1.5"
-                    title={item.title}
-                  >
-                    {item.title}
-                  </h4>
-
-                  {/* Quick Access Link to Source if present */}
-                  <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-gray-100/80">
-                    {item.sourceLink ? (
-                      <Link
-                        href={item.sourceLink}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 text-[#c49a2c] hover:text-[#a07e1e] font-bold hover:underline truncate max-w-full"
-                        title={item.sourceTitle ? `مشاهده ${item.sourceTitle}` : "مشاهده صفحه"}
-                      >
-                        <span className="truncate">{item.sourceTitle || "مشاهده منبع"}</span>
-                        <ExternalLink size={11} className="shrink-0" />
-                      </Link>
-                    ) : (
-                      <span className="text-gray-400 text-[10px] truncate">آرشیو کارخانه</span>
-                    )}
-
-                    <span className="text-gray-400 group-hover:text-[#c49a2c] transition-colors text-[10px] font-medium shrink-0">
-                      بزرگ‌نمایی 🔍
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          /* Sectioned / Grouped View */
-          <div className="space-y-12">
-            {sectionedGroups.map((group) => {
-              const IconComp = CATEGORY_ICON_MAP[group.key] || Tag;
-
-              return (
-                <section
-                  key={group.key}
-                  className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm"
-                  aria-labelledby={`heading-${group.key}`}
+                <button
+                  type="button"
+                  onClick={() => handleSwitchTab("all-photos")}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    activeMainTab === "all-photos"
+                      ? "bg-gradient-to-r from-[#c49a2c] to-[#e0b74c] text-[#060f1c] shadow-lg shadow-[#c49a2c]/20"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
                 >
-                  {/* Section Header */}
-                  <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#060f1c] text-[#c49a2c] flex items-center justify-center shadow-md">
-                        <IconComp size={20} />
-                      </div>
-                      <div>
-                        <h3 id={`heading-${group.key}`} className="text-lg sm:text-xl font-black text-[#0a1628]">
-                          {group.label}
-                        </h3>
-                        <p className="text-xs text-gray-400">
-                          شامل {group.items.length} تصویر منتخب در این دسته‌بندی
-                        </p>
-                      </div>
-                    </div>
+                  <ImageIcon size={18} />
+                  <span>آرشیو جامع تصاویر</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${
+                      activeMainTab === "all-photos"
+                        ? "bg-[#060f1c] text-[#e0b74c]"
+                        : "bg-white/10 text-gray-300"
+                    }`}
+                  >
+                    {items.length.toLocaleString("fa-IR")}
+                  </span>
+                </button>
+              </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveCategory(group.key);
-                        setViewMode("grid");
-                      }}
-                      className="text-xs font-bold text-[#c49a2c] hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      مشاهده در آرشیو فشرده
-                    </button>
-                  </div>
+              {/* Mode Description Tag */}
+              <div className="text-xs text-gray-400 text-center sm:text-left">
+                {activeMainTab === "albums" ? (
+                  <span>گزارش‌های خبری مصور، بازدیدها و رویدادهای رسمی کارخانه</span>
+                ) : (
+                  <span>آرشیو کامل کلیه قطعات، تجهیزات، کارگاه و پروژه‌ها</span>
+                )}
+              </div>
+            </div>
 
-                  {/* Section Images Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4">
-                    {group.items.map((item) => {
-                      const globalIdx = filteredItems.findIndex((x) => x.id === item.id);
-
+            {/* TAB 1: ALBUMS MODE */}
+            {activeMainTab === "albums" && (
+              <div className="space-y-8 animate-fadeIn">
+                {/* Album Filter Bar */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
+                  {/* Category Pills */}
+                  <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 scrollbar-none">
+                    {ALBUM_CATEGORY_FILTERS.map((cat) => {
+                      const isActive = albumCategory === cat.key;
                       return (
-                        <div
-                          key={item.id}
-                          className="group relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-200/80 shadow-sm hover:shadow-lg hover:border-[#c49a2c]/40 transition-all duration-300 flex flex-col cursor-pointer"
-                          onClick={() => openLightbox(globalIdx >= 0 ? globalIdx : 0)}
+                        <button
+                          key={cat.key}
+                          type="button"
+                          onClick={() => setAlbumCategory(cat.key)}
+                          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                            isActive
+                              ? "bg-[#c49a2c] text-[#060f1c] shadow-md shadow-[#c49a2c]/20"
+                              : "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                          }`}
                         >
-                          <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={item.thumbnailUrl || item.imageUrl}
-                              alt={item.alt || item.title}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                            />
-                            <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span className="w-6 h-6 rounded-full bg-black/60 backdrop-blur-md text-[#e5c158] flex items-center justify-center">
-                                <ZoomIn size={12} />
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="p-3 flex flex-col justify-between flex-1 bg-white">
-                            <h4 className="text-xs font-bold text-[#0a1628] truncate mb-1" title={item.title}>
-                              {item.title}
-                            </h4>
-
-                            {item.sourceLink && (
-                              <Link
-                                href={item.sourceLink}
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-[11px] font-bold text-[#c49a2c] hover:underline inline-flex items-center gap-1 truncate"
-                              >
-                                <span className="truncate">{item.sourceTitle || "مشاهده منبع"}</span>
-                                <ExternalLink size={10} className="shrink-0" />
-                              </Link>
-                            )}
-                          </div>
-                        </div>
+                          {cat.label}
+                        </button>
                       );
                     })}
                   </div>
-                </section>
-              );
-            })}
-          </div>
+
+                  {/* Album Search */}
+                  <div className="relative w-full md:w-72">
+                    <Search
+                      size={16}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      value={albumSearch}
+                      onChange={(e) => setAlbumSearch(e.target.value)}
+                      placeholder="جستجو در گزارش‌ها و رویدادها..."
+                      className="w-full pl-9 pr-9 py-2 bg-black/40 hover:bg-black/60 focus:bg-black/80 border border-white/10 focus:border-[#c49a2c] rounded-xl text-xs text-white placeholder-gray-400 focus:outline-none transition-all"
+                    />
+                    {albumSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setAlbumSearch("")}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Albums Grid */}
+                {filteredAlbums.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    {filteredAlbums.map((album) => (
+                      <AlbumCard
+                        key={album.id}
+                        album={album}
+                        onSelect={handleSelectAlbum}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-20 text-center rounded-2xl bg-white/[0.02] border border-white/5">
+                    <BookOpen size={40} className="mx-auto text-gray-500 mb-3 opacity-50" />
+                    <p className="text-sm font-semibold text-gray-300">
+                      هیچ آلبومی با مشخصات جستجو شده یافت نشد.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAlbumCategory("all");
+                        setAlbumSearch("");
+                      }}
+                      className="mt-3 text-xs text-[#c49a2c] hover:underline"
+                    >
+                      نمایش همه آلبوم‌ها
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: ALL PHOTOS ARCHIVE MODE */}
+            {activeMainTab === "all-photos" && (
+              <div className="space-y-8 animate-fadeIn">
+                {/* Top Control Bar: Search & Dynamic Categories */}
+                <div className="rounded-2xl p-4 md:p-6 bg-white/[0.03] border border-white/10 backdrop-blur-md space-y-5">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    {/* Search Input */}
+                    <div className="relative w-full md:w-80">
+                      <Search
+                        size={18}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="جستجو در تصاویر، محصولات و پروژه‌ها..."
+                        className="w-full pl-9 pr-10 py-2.5 bg-black/40 hover:bg-black/60 focus:bg-black/80 border border-white/10 rounded-xl text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#c49a2c] focus:ring-1 focus:ring-[#c49a2c]/30 transition-all"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery("")}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1 cursor-pointer"
+                          aria-label="پاک کردن جستجو"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* View Mode Toggle & Total Counter */}
+                    <div className="flex items-center justify-between w-full md:w-auto gap-4">
+                      <span className="text-xs sm:text-sm text-gray-300 font-medium">
+                        نمایش <span className="font-bold text-[#e0b74c]">{filteredItems.length.toLocaleString("fa-IR")}</span> تصویر
+                      </span>
+
+                      <div className="flex items-center bg-black/40 p-1 rounded-xl border border-white/10">
+                        <button
+                          type="button"
+                          onClick={() => setViewMode("grid")}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            viewMode === "grid"
+                              ? "bg-[#c49a2c] text-[#060f1c] shadow-sm"
+                              : "text-gray-400 hover:text-white"
+                          }`}
+                          title="نمایش یکپارچه"
+                        >
+                          <Grid size={14} />
+                          <span>آرشیو فشرده</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setViewMode("sections")}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            viewMode === "sections"
+                              ? "bg-[#c49a2c] text-[#060f1c] shadow-sm"
+                              : "text-gray-400 hover:text-white"
+                          }`}
+                          title="نمایش بخش‌بندی شده"
+                        >
+                          <Layers size={14} />
+                          <span>بخش‌بندی</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dynamic Category Filter Tabs */}
+                  {viewMode === "grid" && (
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none border-t border-white/10">
+                      {dynamicCategories.map((tab) => {
+                        const IconComponent = CATEGORY_ICON_MAP[tab.key] || Tag;
+                        const isActive = activeCategory === tab.key;
+
+                        return (
+                          <button
+                            key={tab.key}
+                            type="button"
+                            onClick={() => setActiveCategory(tab.key)}
+                            className={`shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                              isActive
+                                ? "bg-[#c49a2c] text-[#060f1c] shadow-md shadow-[#c49a2c]/20 scale-[1.02]"
+                                : "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                            }`}
+                          >
+                            <IconComponent
+                              size={15}
+                              className={isActive ? "text-[#060f1c]" : "text-[#c49a2c]"}
+                            />
+                            <span>{tab.label}</span>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                                isActive
+                                  ? "bg-[#060f1c] text-[#e0b74c]"
+                                  : "bg-white/10 text-gray-300"
+                              }`}
+                            >
+                              {tab.count.toLocaleString("fa-IR")}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* ARCHIVE CONTENT: GRID OR SECTIONS */}
+                {viewMode === "grid" ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
+                    {filteredItems.map((item, index) => (
+                      <div
+                        key={item.id}
+                        onClick={() => openArchiveLightbox(index)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            openArchiveLightbox(index);
+                          }
+                        }}
+                        className="group relative flex flex-col rounded-2xl overflow-hidden bg-gradient-to-b from-[#0e1c31] to-[#07111e] border border-white/10 hover:border-[#c49a2c]/60 transition-all duration-300 hover:shadow-xl hover:shadow-[#c49a2c]/10 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c49a2c]"
+                      >
+                        <div className="relative w-full aspect-square overflow-hidden bg-black/40">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={item.thumbnailUrl || item.imageUrl}
+                            alt={item.alt || item.title}
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                          {/* Hover Overlay Zoom Icon */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30 backdrop-blur-[2px]">
+                            <div className="w-10 h-10 rounded-full bg-[#c49a2c] text-[#060f1c] flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-110">
+                              <ZoomIn size={18} />
+                            </div>
+                          </div>
+
+                          {/* Top Category Badge */}
+                          <span className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/70 backdrop-blur-md text-[#e0b74c] border border-white/10">
+                            {item.categoryLabel}
+                          </span>
+                        </div>
+
+                        {/* Caption Bar */}
+                        <div className="p-3 flex-1 flex flex-col justify-between gap-2">
+                          <p className="text-xs font-semibold text-gray-200 group-hover:text-[#c49a2c] transition-colors leading-relaxed line-clamp-2">
+                            {item.title}
+                          </p>
+                          {item.sourceTitle && (
+                            <p className="text-[11px] text-gray-400 truncate">
+                              {item.sourceTitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Sectioned View */
+                  <div className="space-y-12">
+                    {sectionedGroups.map((group) => (
+                      <div key={group.key} className="space-y-4">
+                        <div className="flex items-center gap-3 pb-3 border-b border-white/10">
+                          <h3 className="text-lg font-bold text-white">
+                            {group.label}
+                          </h3>
+                          <span className="text-xs bg-[#c49a2c]/20 text-[#e0b74c] px-2.5 py-0.5 rounded-full font-bold">
+                            {group.items.length.toLocaleString("fa-IR")} تصویر
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
+                          {group.items.map((item) => {
+                            const globalIndex = filteredItems.findIndex((it) => it.id === item.id);
+                            return (
+                              <div
+                                key={item.id}
+                                onClick={() => openArchiveLightbox(globalIndex >= 0 ? globalIndex : 0)}
+                                role="button"
+                                tabIndex={0}
+                                className="group relative flex flex-col rounded-2xl overflow-hidden bg-gradient-to-b from-[#0e1c31] to-[#07111e] border border-white/10 hover:border-[#c49a2c]/60 transition-all duration-300 hover:shadow-xl hover:shadow-[#c49a2c]/10 cursor-pointer"
+                              >
+                                <div className="relative w-full aspect-square overflow-hidden bg-black/40">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={item.thumbnailUrl || item.imageUrl}
+                                    alt={item.alt || item.title}
+                                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                                    loading="lazy"
+                                  />
+                                </div>
+                                <div className="p-3">
+                                  <p className="text-xs font-semibold text-gray-200 group-hover:text-[#c49a2c] transition-colors leading-relaxed line-clamp-2">
+                                    {item.title}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Shared Lightbox Component */}
       <ImageLightbox
         images={lightboxImages}
         initialIndex={lightboxIndex ?? 0}

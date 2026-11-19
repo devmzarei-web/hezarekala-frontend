@@ -1,4 +1,4 @@
-import type { Product } from "@/payload-types";
+import type { Album, Media, Product } from "@/payload-types";
 
 /* ── Company Information ── */
 export const COMPANY = {
@@ -239,3 +239,93 @@ export const DEFAULT_PRODUCTS: Product[] = [
     ],
   },
 ] as unknown as Product[];
+
+/* ── Default Media & Event Albums ── */
+export const DEFAULT_ALBUMS: Album[] = [
+  {
+    id: "album-tv-interview-2026",
+    title: "گزارش اختصاصی صدا و سیما از دستاوردها و خطوط تولید شرکت هزاره کالا دانش اروند",
+    slug: "national-tv-interview",
+    eventDate: "2026-11-19",
+    category: "media-coverage",
+    coverImage: "/images/events/tv-interview-2026/tv-interview-01.jpg" as unknown as Media,
+    summary:
+      "بازدید و پوشش ویژه خبری رسانه ملی از توانمندی‌های بومی‌سازی پمپ‌های صنعتی بزرگ، فرآیند ساخت و مونتاژ استاندارد API 610 و مصاحبه با مدیریت و تیم مهندسی در کارخانه آبادان.",
+    description:
+      "تیم مستندسازی و خبرنگاران صدا و سیما با حضور در کارخانه شرکت هزاره کالا دانش اروند واقع در شهرک صنعتی آبادان (منطقه آزاد اروند)، گزارش ویژه‌ای از دستاوردهای نوین این مجموعه در زمینه خودکفایی و طراحی پمپ‌های صنعتی بزرگ، دیزل‌ژنراتورها و تجهیزات فرآیندی صنایع نفت، گاز و پتروشیمی تهیه نمودند. در این برنامه، مدیریت عامل و کادر فنی شرکت به تشریح مراحل مهندسی معکوس دقیق، ریخته‌گری آلیاژی، ماشین‌کاری قطعات حساس و تست‌های کارگاهی مطابق استانداردهای بین‌المللی پرداختند.",
+    videoUrl: "/images/events/tv-interview-2026/tv-interview-video-03.mp4",
+    isFeaturedOnHome: true,
+    order: 10,
+    isActive: true,
+    createdAt: "2026-11-19T00:00:00.000Z",
+    updatedAt: "2026-11-19T00:00:00.000Z",
+    photos: [
+      {
+        id: "photo-01",
+        image: "/images/events/tv-interview-2026/tv-interview-01.jpg" as unknown as Media,
+        caption: "مصاحبه اختصاصی خبرنگار صدا و سیما با مدیریت عامل شرکت پیرامون جهش تولید و بومی‌سازی پمپ‌های صنعتی",
+        order: 1,
+      },
+      {
+        id: "photo-02",
+        image: "/images/events/tv-interview-2026/tv-interview-02.jpg" as unknown as Media,
+        caption: "تشریح زنجیره تأمین، تکنولوژی‌های نوین ساخت و چشم‌انداز توسعه بازارهای منطقه‌ای نفت و گاز",
+        order: 2,
+      },
+      {
+        id: "photo-08",
+        image: "/images/events/tv-interview-2026/tv-interview-08.jpg" as unknown as Media,
+        caption: "تصویربرداری تیم مستندسازی صدا و سیما از سالن مونتاژ و ماشین‌کاری دقیق CNC",
+        order: 3,
+      },
+      {
+        id: "photo-09",
+        image: "/images/events/tv-interview-2026/tv-interview-09.jpg" as unknown as Media,
+        caption: "بررسی مشخصات فنی پمپ‌های سانتریفیوژ و خودمکِش در حضور گروه فیلم‌برداری رسانه ملی",
+        order: 4,
+      },
+      {
+        id: "photo-10",
+        image: "/images/events/tv-interview-2026/tv-interview-10.jpg" as unknown as Media,
+        caption: "مصاحبه با مهندسان ارشد و متخصصان واحد تحقیق و توسعه (R&D) در کارگاه تولید",
+        order: 5,
+      },
+      {
+        id: "photo-11",
+        image: "/images/events/tv-interview-2026/tv-interview-11.jpg" as unknown as Media,
+        caption: "پوشش تصویری فرآیند تست هیدرواستاتیک و کنترل کیفیت قطعات ریخته‌گری",
+        order: 6,
+      },
+      {
+        id: "photo-12",
+        image: "/images/events/tv-interview-2026/tv-interview-12.jpg" as unknown as Media,
+        caption: "کارشناسان تولید در حال تراشکاری و بالانس دینامیکی پروانه پمپ‌های سنگین",
+        order: 7,
+      },
+      {
+        id: "photo-13",
+        image: "/images/events/tv-interview-2026/tv-interview-13.jpg" as unknown as Media,
+        caption: "تصویربرداری از خطوط آماده‌سازی سطح، وت‌بلاست و رنگ‌آمیزی صنعتی",
+        order: 8,
+      },
+      {
+        id: "photo-14",
+        image: "/images/events/tv-interview-2026/tv-interview-14.jpg" as unknown as Media,
+        caption: "گفتگو با پرسنل فنی پیرامون اشتغال‌زایی بومی و ظرفیت‌های صنعتی منطقه آزاد اروند",
+        order: 9,
+      },
+      {
+        id: "photo-15",
+        image: "/images/events/tv-interview-2026/tv-interview-15.jpg" as unknown as Media,
+        caption: "نمایی از خط تولید و تجهیزات آماده تحویل به پروژه‌های پالایشگاهی و پتروشیمی",
+        order: 10,
+      },
+      {
+        id: "photo-16",
+        image: "/images/events/tv-interview-2026/tv-interview-16.jpg" as unknown as Media,
+        caption: "عکس یادگاری گروه تولید صدا و سیما با پرسنل و مهندسان شرکت هزاره کالا دانش اروند",
+        order: 11,
+      },
+    ],
+  },
+];

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSettings, getFeaturedProducts, getHomePage, getFeaturedProjects, getHomeSections, getCertificates } from "@/lib/payload";
+import { getSettings, getFeaturedProducts, getHomePage, getFeaturedProjects, getHomeSections, getCertificates, getFeaturedAlbum } from "@/lib/payload";
 import { SITE_URL, CMS_URL } from "@/lib/env";
 import type { Page, HomeSection } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
@@ -38,13 +38,14 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [settings, products, homePage, projects, homeSections, certificates] = await Promise.all([
+  const [settings, products, homePage, projects, homeSections, certificates, featuredAlbum] = await Promise.all([
     getSettings(),
     getFeaturedProducts(),
     getHomePage(),
     getFeaturedProjects(),
     getHomeSections(),
     getCertificates(true),
+    getFeaturedAlbum(),
   ]);
 
   const heroSlides = homePage?.heroSlides?.map((slide: NonNullable<Page["heroSlides"]>[number]) => ({
@@ -103,7 +104,13 @@ export default async function Home() {
         <Header settings={settings} />
         
         {/* 1. Hero - Dark */}
-        <Hero slides={heroSlides} heroVideoUrl={heroVideoUrl} heroVideo={heroVideoData} settings={settings} />
+        <Hero
+          slides={heroSlides}
+          heroVideoUrl={heroVideoUrl}
+          heroVideo={heroVideoData}
+          settings={settings}
+          featuredAlbum={featuredAlbum}
+        />
 
         {/* 2. Why Us - Light (White) */}
         {whyUs?.whyUsCards?.length ? <WhyUs title={whyUs.title} subtitle={whyUs.subtitle || undefined} theme="light" backgroundImage={bg(whyUs)} cards={whyUs.whyUsCards as any} /> : null}

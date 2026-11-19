@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSettings, getPage, getProducts } from "@/lib/payload";
+import { getSettings, getPage, getProducts, getAlbums } from "@/lib/payload";
 import { SITE_URL, PAYLOAD_API_URL } from "@/lib/env";
 import { getMediaUrl } from "@/lib/media";
 import Header from "@/components/layout/Header";
@@ -92,14 +92,22 @@ const CATEGORY_NAMES: Record<string, string> = {
   other: "عمومی و کارخانه",
 };
 
-export default async function GalleryPage() {
-  const [settings, page, galleryDocs, productDocs, projectDocs] = await Promise.all([
+interface GalleryPageProps {
+  searchParams?: Promise<{ album?: string; tab?: string }>;
+}
+
+export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+  const [settings, page, galleryDocs, productDocs, projectDocs, albums] = await Promise.all([
     getSettings(),
     getPage("gallery"),
     getGalleryItems(),
     getProducts(),
     getProjectsItems(),
+    getAlbums(),
   ]);
+
+  const resolvedParams = searchParams ? await searchParams : {};
+  const initialAlbumSlug = resolvedParams?.album || null;
 
   // Use a map to guarantee deduplication
   const itemsMap = new Map<string, UnifiedGalleryItem>();
@@ -233,6 +241,33 @@ export default async function GalleryPage() {
     }
   });
 
+  // 4. Process Album Photos (Media coverage, TV interview, factory events)
+  albums.forEach((album: any) => {
+    if (Array.isArray(album.photos)) {
+      album.photos.forEach((photo: any, pIdx: number) => {
+        if (!photo?.image) return;
+        const key = getMediaAssetKey(photo.image);
+        if (key && !itemsMap.has(key)) {
+          const photoUrl = getMediaUrl(photo.image);
+          const caption = photo.caption || `${album.title} - تصویر ${pIdx + 1}`;
+          itemsMap.set(key, {
+            id: `album-${album.id || album.slug}-p-${pIdx}`,
+            title: caption,
+            caption: caption,
+            imageUrl: photoUrl,
+            thumbnailUrl: photoUrl,
+            category: "media-coverage",
+            categoryLabel: "پوشش رسانه‌ای و خبری",
+            sourceTitle: album.title,
+            sourceLink: `/gallery?album=${album.slug}`,
+            sourceType: "album",
+            alt: caption,
+          });
+        }
+      });
+    }
+  });
+
   const deduplicatedItems = Array.from(itemsMap.values());
 
   return (
@@ -258,7 +293,11 @@ export default async function GalleryPage() {
           breadcrumb={[{ label: "خانه", href: "/" }, { label: page?.title || "گالری" }]}
         />
 
-        <GalleryView items={deduplicatedItems} />
+        <GalleryView
+          albums={albums}
+          items={deduplicatedItems}
+          initialAlbumSlug={initialAlbumSlug}
+        />
 
         <Footer settings={settings} />
       </main>

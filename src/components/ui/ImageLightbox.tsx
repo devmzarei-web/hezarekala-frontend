@@ -9,6 +9,7 @@ export interface LightboxImage {
   url: string;
   alt?: string;
   title?: string;
+  caption?: string;
   thumbnailUrl?: string;
   sourceLink?: string;
   sourceTitle?: string;
@@ -142,8 +143,8 @@ export default function ImageLightbox({
         >
           {/* Counter / Title / Category */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span className="text-xs sm:text-sm font-bold bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-[#c49a2c] tracking-wider">
-              {currentIndex + 1} / {images.length}
+            <span className="text-xs sm:text-sm font-bold bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-[#c49a2c] tracking-wider tabular-nums">
+              {(currentIndex + 1).toLocaleString("fa-IR")} از {images.length.toLocaleString("fa-IR")}
             </span>
             {currentImage.categoryLabel && (
               <span className="text-xs font-semibold bg-[#c49a2c]/15 text-[#e5c158] border border-[#c49a2c]/30 px-2.5 py-1 rounded-full">
@@ -271,9 +272,9 @@ export default function ImageLightbox({
         >
           {/* Captions / Source Link Mobile Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-3 text-center">
-            {currentImage.alt && currentImage.alt !== currentImage.title && (
-              <p className="text-xs sm:text-sm text-gray-300 truncate max-w-xl">
-                {currentImage.alt}
+            {(currentImage.caption || currentImage.alt) && (
+              <p className="text-xs sm:text-sm text-gray-200 font-medium px-4 py-1.5 rounded-lg bg-black/60 border border-white/10 max-w-2xl leading-relaxed">
+                {currentImage.caption || currentImage.alt}
               </p>
             )}
 

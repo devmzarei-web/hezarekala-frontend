@@ -1,6 +1,6 @@
-import type { Settings, Product, ProductCategory, Page, HomeSection, Certificate } from "@/payload-types";
+import type { Settings, Product, ProductCategory, Page, HomeSection, Certificate, Album } from "@/payload-types";
 import { PAYLOAD_API_URL } from "@/lib/env";
-import { DEFAULT_PRODUCTS } from "@/lib/constants";
+import { DEFAULT_PRODUCTS, DEFAULT_ALBUMS } from "@/lib/constants";
 
 /* ── Types ── */
 export interface ProjectItem {
@@ -250,6 +250,58 @@ export async function getCertificates(onlyFeaturedHome = false): Promise<Certifi
   const data = await fetchAPI<{ docs: Certificate[] }>(query);
 
   return data?.docs ?? [];
+}
+
+/* ── Albums & Events ── */
+export async function getAlbums(category?: string): Promise<Album[]> {
+  try {
+    let query = "/albums?where[isActive][equals]=true&sort=-order,-eventDate&limit=50&depth=2";
+    if (category && category !== "all") {
+      query += `&where[category][equals]=${encodeURIComponent(category)}`;
+    }
+    const data = await fetchAPI<{ docs: Album[] }>(query);
+    if (data?.docs && data.docs.length > 0) {
+      return data.docs;
+    }
+  } catch (error) {
+    console.warn("Failed to fetch albums from CMS, using fallback:", error);
+  }
+
+  if (category && category !== "all") {
+    return DEFAULT_ALBUMS.filter((a) => a.category === category);
+  }
+  return DEFAULT_ALBUMS;
+}
+
+export async function getAlbumBySlug(slug: string): Promise<Album | null> {
+  try {
+    const encodedSlug = encodeURIComponent(slug);
+    const data = await fetchAPI<{ docs: Album[] }>(
+      `/albums?where[slug][equals]=${encodedSlug}&where[isActive][equals]=true&limit=1&depth=2`
+    );
+    if (data?.docs?.[0]) {
+      return data.docs[0];
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch album '${slug}' from CMS, using fallback:`, error);
+  }
+
+  return DEFAULT_ALBUMS.find((a) => a.slug === slug) ?? null;
+}
+
+export async function getFeaturedAlbum(): Promise<Album | null> {
+  try {
+    const data = await fetchAPI<{ docs: Album[] }>(
+      "/albums?where[isActive][equals]=true&where[isFeaturedOnHome][equals]=true&sort=-order,-eventDate&limit=1&depth=2"
+    );
+    if (data?.docs?.[0]) {
+      return data.docs[0];
+    }
+  } catch (error) {
+    console.warn("Failed to fetch featured album from CMS, using fallback:", error);
+  }
+
+  return DEFAULT_ALBUMS.find((a) => a.isFeaturedOnHome) ?? DEFAULT_ALBUMS[0] ?? null;
 }
 
 /* ── Generic export for pages that still need direct Payload calls ── */

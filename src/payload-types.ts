@@ -77,6 +77,7 @@ export interface Config {
     posts: Post;
     projects: Project;
     gallery: Gallery;
+    albums: Album;
     team: Team;
     'home-sections': HomeSection;
     certificates: Certificate;
@@ -735,6 +736,34 @@ export interface Certificate {
   order?: number | null;
   isActive?: boolean | null;
   isFeaturedHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "albums".
+ */
+export interface AlbumPhoto {
+  image: string | Media;
+  caption?: string | null;
+  order?: number | null;
+  id?: string | null;
+}
+
+export interface Album {
+  id: string;
+  title: string;
+  slug: string;
+  eventDate: string;
+  category: 'media-coverage' | 'workshop' | 'exhibition' | 'milestone' | 'other';
+  coverImage: string | Media;
+  summary: string;
+  description?: any;
+  videoUrl?: string | null;
+  photos: AlbumPhoto[];
+  isFeaturedOnHome?: boolean | null;
+  order?: number | null;
+  isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
