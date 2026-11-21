@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import type { Product } from "@/payload-types";
 import { getMediaUrl } from "@/lib/media";
 import { getProductCategoryLabel } from "@/lib/product-category";
+import { formatPriceWithUnit, isPriceAvailable } from "@/lib/price";
 
 interface ProductCards3DProps {
   products: Product[];
@@ -74,11 +75,29 @@ function ProductCard({ product }: { product: Product }) {
                 </p>
               )}
               <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-white/[0.06]">
-                <span className="text-[#c49a2c] font-bold text-xs md:text-sm flex items-center gap-1">
-                  <span>مشاهده جزئیات</span>
-                  <ArrowLeft size={12} className="md:size-14 group-hover:-translate-x-1 transition-transform" />
-                </span>
-                <div className="w-6 h-1 md:w-8 md:h-1 rounded-full bg-[#c49a2c]/20 group-hover:bg-[#c49a2c] group-hover:w-10 md:group-hover:w-12 transition-all duration-300" />
+                <div className="flex flex-col">
+                  {isPriceAvailable(product) ? (
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400">قیمت قطعی:</span>
+                      <span className="text-white font-black text-xs md:text-sm">
+                        {formatPriceWithUnit(product.price, product.priceUnit)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-[#c49a2c] font-bold text-xs md:text-sm flex items-center gap-1">
+                      <span>مشاهده جزئیات</span>
+                      <ArrowLeft size={12} className="md:size-14 group-hover:-translate-x-1 transition-transform" />
+                    </span>
+                  )}
+                </div>
+                {isPriceAvailable(product) ? (
+                  <span className="text-[#c49a2c] font-bold text-xs flex items-center gap-1">
+                    <span>جزئیات</span>
+                    <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
+                  </span>
+                ) : (
+                  <div className="w-6 h-1 md:w-8 md:h-1 rounded-full bg-[#c49a2c]/20 group-hover:bg-[#c49a2c] group-hover:w-10 md:group-hover:w-12 transition-all duration-300" />
+                )}
               </div>
             </div>
           </div>

@@ -227,6 +227,14 @@ export interface Product {
    * دسته‌بندی اصلی محصول را انتخاب کنید.
    */
   category?: (string | null) | ProductCategory;
+  productCode?: string | null;
+  price?: number | null;
+  priceUnit?: ('toman' | 'rial' | 'usd') | null;
+  callForPrice?: boolean | null;
+  priceIncludesVat?: boolean | null;
+  freeSetupCities?: string | null;
+  warranty?: string | null;
+  commercialTerms?: string | null;
   featuredImage?: (string | null) | Media;
   gallery?:
     | {

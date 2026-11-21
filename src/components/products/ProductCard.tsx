@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowLeftRight, PhoneCall, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowLeftRight, PhoneCall, MessageCircle, ShoppingBag } from "lucide-react";
 import { getMediaUrl } from "@/lib/media";
 import { getProductCategoryLabel } from "@/lib/product-category";
 import { getSpecLabel, SpecValueDisplay } from "@/lib/specs";
+import { formatPriceWithUnit, isPriceAvailable } from "@/lib/price";
 import type { Product } from "@/payload-types";
 
 interface ProductCardProps {
@@ -25,10 +26,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     .filter((s) => s && s.value)
     .slice(0, 2);
 
+  const priceAvailable = isPriceAvailable(product);
+  const formattedPrice = priceAvailable ? formatPriceWithUnit(product.price, product.priceUnit) : "";
+
   const inquiryUrl = `/contact?product=${encodeURIComponent(product.slug)}`;
-  const whatsappUrl = `https://wa.me/989163337968?text=${encodeURIComponent(
-    `سلام، درخواست استعلام قیمت و مشاوره فنی برای محصول «${product.title}» دارم.`
-  )}`;
+  const whatsappMessage = priceAvailable
+    ? `سلام، درخواست خرید و صدور پیش‌فاکتور برای محصول «${product.title}» ${product.productCode ? `(کد: ${product.productCode})` : ""} با قیمت ${formattedPrice} دارم.`
+    : `سلام، درخواست استعلام قیمت و مشاوره فنی برای محصول «${product.title}» دارم.`;
+  const whatsappUrl = `https://wa.me/989163337968?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <article className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#c49a2c]/30 transition-all duration-300 flex flex-col h-full">
@@ -88,17 +93,43 @@ export default function ProductCard({ product }: ProductCardProps) {
               ))}
             </div>
           )}
+
+          {/* ── Pricing and Product Code Row ── */}
+          <div className="pt-2.5 pb-2 border-t border-gray-100 flex items-center justify-between gap-2">
+            {priceAvailable ? (
+              <div className="flex flex-col">
+                <span className="text-[10px] text-gray-400 font-medium">قیمت با ارزش افزوده:</span>
+                <span className="text-sm font-black text-[#0a1628]">
+                  {formattedPrice}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60">
+                <span>استعلام قیمت و مشاوره</span>
+              </div>
+            )}
+
+            {product.productCode && (
+              <span className="text-[11px] font-mono font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 shrink-0" dir="ltr">
+                کد: {product.productCode}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* ── B2B Inquiry & Action Bar (Zero Prices) ── */}
+        {/* ── B2B Action Bar ── */}
         <div className="pt-3 border-t border-gray-100 flex items-center gap-1.5">
           <Link
             href={inquiryUrl}
             className="flex-1 bg-[#c49a2c] hover:bg-[#d4a82c] text-black font-bold text-xs py-2 px-2.5 rounded-xl flex items-center justify-center gap-1 transition-all shadow-sm hover:shadow-md hover:shadow-[#c49a2c]/20"
-            title="استعلام قیمت و مشاوره فنی"
+            title={priceAvailable ? "درخواست خرید و صدور پیش‌فاکتور" : "استعلام قیمت و مشاوره فنی"}
           >
-            <PhoneCall size={13} className="shrink-0" />
-            <span className="truncate">استعلام قیمت</span>
+            {priceAvailable ? (
+              <ShoppingBag size={13} className="shrink-0" />
+            ) : (
+              <PhoneCall size={13} className="shrink-0" />
+            )}
+            <span className="truncate">{priceAvailable ? "سفارش و پیش‌فاکتور" : "استعلام قیمت"}</span>
           </Link>
 
           <a
@@ -106,8 +137,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-xl border border-emerald-200 hover:border-emerald-600 transition-all shrink-0"
-            title="استعلام قیمت در واتساپ"
-            aria-label="استعلام در واتساپ"
+            title={priceAvailable ? "سفارش مستقیم در واتساپ" : "استعلام قیمت در واتساپ"}
+            aria-label="استعلام یا سفارش در واتساپ"
           >
             <MessageCircle size={15} />
           </a>
